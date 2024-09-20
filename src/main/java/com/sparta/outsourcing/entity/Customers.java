@@ -1,7 +1,6 @@
-package com.sparta.outsourcing.entity.customer;
+package com.sparta.outsourcing.entity;
 
-import com.sparta.outsourcing.entity.Timestamped;
-import com.sparta.outsourcing.entity.UserRoleEnum;
+import com.sparta.outsourcing.dto.customer.CustomerUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,12 +58,16 @@ public class Customers extends Timestamped {
     }
 
 
-    public void updatePassword(String newPassword){
+    public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
 
-    public void deleteUpdate(LocalDateTime deleteTime){
+    public void deleteUpdate(LocalDateTime deleteTime) {
         this.dateDeleted = deleteTime;
     }
 
+    public void update(CustomerUpdateRequestDto updateRequestDto) {
+        if (updateRequestDto.getBirthday() != null) this.birthday = updateRequestDto.getBirthday();
+        if (updateRequestDto.getAddress() != null) this.address = updateRequestDto.getAddress();
+    }
 }
