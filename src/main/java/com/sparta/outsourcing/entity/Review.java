@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Setter
 @EntityListeners(AuditingEntityListener.class)
+@Table(name="reivews")
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
