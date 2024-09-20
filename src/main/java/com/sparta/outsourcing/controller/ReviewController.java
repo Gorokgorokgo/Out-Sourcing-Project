@@ -23,11 +23,11 @@ public class ReviewController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<ReviewSimpleResponseDto>> getReviews (@RequestParam int page,
-                                                                     @RequestParam int size,
+    public ResponseEntity<Page<ReviewSimpleResponseDto>> getReviews (@RequestParam(defaultValue = "1", required = false) int page,
+                                                                     @RequestParam(defaultValue = "10", required = false) int size,
                                                                      @RequestParam Long storeId,
-                                                                     @RequestParam(required = false) Integer minStar,
-                                                                     @RequestParam(required = false) Integer maxStar) {
+                                                                     @RequestParam(defaultValue = "0",required = false) int minStar,
+                                                                     @RequestParam(defaultValue = "5",required = false) int maxStar) {
         return ResponseEntity.ok(reviewService.getReviews(page, size, storeId, minStar, maxStar));
     }
 

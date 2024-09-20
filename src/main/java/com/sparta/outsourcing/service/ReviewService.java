@@ -36,10 +36,8 @@ public class ReviewService {
         return new ReviewResponseDto(saveReview);
     }
 
-    public Page<ReviewSimpleResponseDto> getReviews(int page, int size, Long storeId, Integer minStar, Integer maxStar) {
+    public Page<ReviewSimpleResponseDto> getReviews(int page, int size, Long storeId, int minStar, int maxStar) {
         Pageable pageable = PageRequest.of(page-1, size, Sort.by("modifiedAt").descending());
-        if(minStar == null) minStar = 0;
-        if(maxStar == null) maxStar = 5;
         Store store = storeRepository.findById(storeId).orElseThrow(()->new NullPointerException("해당하는 매장이 존재하지 않습니다."));
         Page<Review> reviewList = reviewRepository.findAllByStoreAndStarBetween(store, minStar, maxStar, pageable);
         return reviewList.map(ReviewSimpleResponseDto::new);
