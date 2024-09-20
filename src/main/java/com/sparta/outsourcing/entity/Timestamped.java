@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 public abstract class Timestamped {
 
     @CreatedDate
-    @Column(updatable = false) // 업데이트 안되게 만들어야 함.
+    @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdAt; // createdAt 만든 시각.
+    private LocalDateTime createAt;
 
     @LastModifiedDate
     @Column
-    @Temporal(TemporalType.TIMESTAMP) // 데이터 타입 맞추기
-    private LocalDateTime modifiedAt; // 조회한 entity 값이 변경 될 때마다, 해당 변경시간으로 변경됨.
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime updatedAt;
 }
