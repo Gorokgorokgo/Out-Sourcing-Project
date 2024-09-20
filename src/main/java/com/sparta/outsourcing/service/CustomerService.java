@@ -101,7 +101,7 @@ public class CustomerService {
             throw new PasswordMismatchException(loginRequestDto.getEmail() + "의 패스워드가 올바르지 않습니다.");
         }
 
-        customer.deleteUpdate(java.time.LocalDateTime.now());
+        customer.membershipWithdrawalTime(java.time.LocalDateTime.now());
 
         return "삭제 완료";
     }

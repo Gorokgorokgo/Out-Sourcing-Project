@@ -13,9 +13,7 @@ import java.util.Date;
 @Entity
 @Table(name = "customers")
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 public class Customer extends Timestamped {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,7 +60,7 @@ public class Customer extends Timestamped {
         this.password = newPassword;
     }
 
-    public void deleteUpdate(LocalDateTime deleteTime) {
+    public void membershipWithdrawalTime(LocalDateTime deleteTime) {
         this.dateDeleted = deleteTime;
     }
 
