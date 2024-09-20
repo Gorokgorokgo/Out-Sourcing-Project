@@ -2,6 +2,7 @@ package com.sparta.outsourcing.controller;
 
 import com.sparta.outsourcing.annotation.Auth;
 import com.sparta.outsourcing.dto.customer.*;
+import com.sparta.outsourcing.exception.DifferentUsersException;
 import com.sparta.outsourcing.exception.WithdrawnMemberException;
 import com.sparta.outsourcing.service.CustomerService;
 import jakarta.validation.Valid;
@@ -18,8 +19,9 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/users/signup")
-    public ResponseEntity<CustomerResponseDto> create(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
-        return ResponseEntity.ok(customerService.create(customerRequestDto));
+    public String create(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
+        ResponseEntity.status(HttpStatus.OK).body(customerService.create(customerRequestDto));
+        return "redirect:/api/users/login";
     }
 
     @PostMapping("/users/login")
@@ -39,7 +41,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/users")
-    public String delete(@Auth AuthUser authUser, @Valid @RequestBody LoginRequestDto loginRequestDto) {
+    public String delete(@Auth AuthUser authUser, @Valid @RequestBody LoginRequestDto loginRequestDto) throws DifferentUsersException {
         return customerService.delete(authUser.getEmail(), loginRequestDto);
     }
 }
