@@ -9,7 +9,7 @@ import com.sparta.outsourcing.entity.Customer;
 import com.sparta.outsourcing.entity.UserRoleEnum;
 import com.sparta.outsourcing.exception.*;
 import com.sparta.outsourcing.jwt.JwtUtil;
-import com.sparta.outsourcing.repository.CustomersRepository;
+import com.sparta.outsourcing.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService {
 
-    private final CustomersRepository customersRepository;
+    private final CustomerRepository customersRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
@@ -49,9 +49,8 @@ public class CustomerService {
                 password,
                 customerRequestDto.getBirthday(),
                 customerRequestDto.getAddress(),
-                role
-        );
-
+                role,
+                null);
         Customer saveCustomer = customersRepository.save(customer);
 
         return new CustomerResponseDto(saveCustomer);
@@ -130,11 +129,11 @@ public class CustomerService {
     }
 
     private Customer findUser(String email) {
-        Customer user = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
-        if (user.getDateDeleted() != null) {
+        Customer customer = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
+        if (customer.getDateDeleted() != null) {
             throw new DataNotFoundException("이미 삭제된 유저 입니다");
         }
 
-        return user;
+        return customer;
     }
 }
