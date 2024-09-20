@@ -17,7 +17,7 @@ public class ReviewSimpleResponseDto {
         this.reviewId = review.getId();
         this.star = review.getStar();
         this.content = review.getContent();
-        this.createdAt = review.getCreatedAt();
-        this.modifiedAt = review.getModifiedAt();
+        this.createdAt = review.getCreateAt();
+        this.modifiedAt = review.getUpdatedAt();
     }
 }

@@ -17,11 +17,11 @@ public class ReviewResponseDto {
 
     public ReviewResponseDto(Review saveReview) {
         this.reviewId = saveReview.getId();
-        this.customerId = saveReview.getCustomer().getId();
+        this.customerId = saveReview.getCustomer().getCustomersId();
         this.storeId = saveReview.getStore().getId();
         this.star = saveReview.getStar();
         this.content = saveReview.getContent();
-        this.createdAt = saveReview.getCreatedAt();
-        this.modifiedAt = saveReview.getModifiedAt();
+        this.createdAt = saveReview.getCreateAt();
+        this.modifiedAt = saveReview.getUpdatedAt();
     }
 }
