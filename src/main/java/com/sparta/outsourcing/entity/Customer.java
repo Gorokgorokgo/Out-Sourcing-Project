@@ -14,7 +14,7 @@ import java.util.Date;
 @Table(name = "customers")
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Customers extends Timestamped {
+public class Customer extends Timestamped {
 
 
     @Id
@@ -37,7 +37,7 @@ public class Customers extends Timestamped {
     @Column(name = "address", nullable = false, length = 50)
     private String address;
 
-    @Column(name = "date_deleted")
+    @Column(name = "deleted_at")
     private LocalDateTime dateDeleted;
 
     @Column(nullable = false)
@@ -45,8 +45,8 @@ public class Customers extends Timestamped {
     private UserRoleEnum role;
 
     // 정적 팩토리 메서드
-    public static Customers create(String name, String email, String password, Date birthday, String address, UserRoleEnum role) {
-        Customers customer = new Customers();
+    public static Customer create(String name, String email, String password, Date birthday, String address, UserRoleEnum role) {
+        Customer customer = new Customer();
         customer.name = name;
         customer.email = email;
         customer.password = password;
