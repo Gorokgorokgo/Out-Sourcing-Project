@@ -38,12 +38,12 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long userId, String email, UserRoleEnum role) {
+    public String createToken(Long customerId, String email, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(String.valueOf(userId)) // 사용자 식별자값(ID)
+                        .setSubject(String.valueOf(customerId)) // 사용자 식별자값(ID)
                         .claim("email", email)
                         .claim("role", role) // 사용자 권한
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간

@@ -57,6 +57,8 @@ public class JwtFilter implements Filter {
             String roleString = claims.get("role", String.class);
             UserRoleEnum role = UserRoleEnum.valueOf(roleString);  // 문자열을 Enum으로 변환
 
+
+            httpRequest.setAttribute("customerId", claims.getSubject());
             httpRequest.setAttribute("role", role);
             httpRequest.setAttribute("email", claims.get("email", String.class));
 
