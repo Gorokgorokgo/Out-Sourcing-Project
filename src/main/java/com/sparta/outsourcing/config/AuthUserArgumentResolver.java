@@ -38,10 +38,11 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         // JwtFilter 에서 set 한 email 값을 가져옴
+        Long customerId = (Long) request.getAttribute("customerId");
         String email = (String) request.getAttribute("email");
         UserRoleEnum role = (UserRoleEnum) request.getAttribute("role");
 
 
-        return new AuthUser(email, role);
+        return new AuthUser(customerId, email, role);
     }
 }

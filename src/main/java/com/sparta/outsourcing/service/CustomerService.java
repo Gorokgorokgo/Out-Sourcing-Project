@@ -120,7 +120,7 @@ public class CustomerService {
 
             //존재하는 유저가 비밀번호를 알맞게 입력시 JWT토큰반환
             return jwtUtil.createToken(
-                    customer.getCustomersId(),
+                    customer.getCustomerId(),
                     customer.getEmail(),
                     customer.getRole()
             );

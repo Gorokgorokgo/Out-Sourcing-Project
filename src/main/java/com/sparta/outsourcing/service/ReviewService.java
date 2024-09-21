@@ -47,7 +47,7 @@ public class ReviewService {
     public ReviewResponseDto updateReview(Long reviewId, Long customerId, ReviewUpdateRequestDto requestDto) {
         customerRepository.findById(customerId).orElseThrow(()-> new NullPointerException("해당 고객이 존재하지 않습니다."));
         Review review = reviewRepository.findById(reviewId).orElseThrow(()-> new NullPointerException("해당 댓글이 존재하지 않습니다."));
-        if(!customerId.equals(review.getCustomer().getCustomersId())) throw new IllegalArgumentException("작성자가 아니므로 수정이 불가능합니다.");
+        if(!customerId.equals(review.getCustomer().getCustomerId())) throw new IllegalArgumentException("작성자가 아니므로 수정이 불가능합니다.");
         review.update(requestDto);
         return new ReviewResponseDto(review);
     }
@@ -56,7 +56,7 @@ public class ReviewService {
     public void deleteReview(Long reviewId, Long customerId) {
         customerRepository.findById(customerId).orElseThrow(()-> new NullPointerException("해당 고객이 존재하지 않습니다."));
         Review review = reviewRepository.findById(reviewId).orElseThrow(()-> new NullPointerException("해당 댓글이 존재하지 않습니다."));
-        if(!customerId.equals(review.getCustomer().getCustomersId())) throw new IllegalArgumentException("작성자가 아니므로 삭제가 불가능합니다.");
+        if(!customerId.equals(review.getCustomer().getCustomerId())) throw new IllegalArgumentException("작성자가 아니므로 삭제가 불가능합니다.");
         reviewRepository.deleteById(reviewId);
     }
 }
