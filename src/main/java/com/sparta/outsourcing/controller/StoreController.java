@@ -1,12 +1,15 @@
 package com.sparta.outsourcing.controller;
 
-import com.sparta.outsourcing.dto.StoreRequestDto;
-import com.sparta.outsourcing.dto.StoreResponseDto;
-import com.sparta.outsourcing.sevice.StoreService;
+import com.sparta.outsourcing.annotation.Auth;
+import com.sparta.outsourcing.dto.customer.AuthUser;
+import com.sparta.outsourcing.dto.store.StoreRequestDto;
+import com.sparta.outsourcing.dto.store.StoreResponseDto;
+import com.sparta.outsourcing.dto.store.StoreStatusUpdateDto;
+import com.sparta.outsourcing.dto.store.StoreUpdateRequestDto;
+import com.sparta.outsourcing.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,32 +20,37 @@ public class StoreController {
 
     private final StoreService storeService;
 
+    // 가게 생성
     @PostMapping("/stores")
-    public ResponseEntity<StoreResponseDto> create(@RequestBody StoreRequestDto requestDto) {
-        StoreResponseDto responseDto = storeService.create(requestDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    public ResponseEntity<StoreResponseDto> createStore(@Auth AuthUser authUser, @RequestBody StoreRequestDto requestDto) {
+        return ResponseEntity.ok(storeService.createStore(authUser, requestDto));
     }
 
+    // 가게 단건 조회
     @GetMapping("/stores/{storeId}")
     public ResponseEntity<StoreResponseDto> getStore(@PathVariable Long storeId) {
-        return new ResponseEntity<>(storeService.getStore(storeId), HttpStatus.OK);
+        return ResponseEntity.ok(storeService.getStore(storeId));
     }
 
+    // 가게 다건 조회
     @GetMapping("/stores")
     public ResponseEntity<Page<StoreResponseDto>> getStores(Pageable pageable) {
-        Page<StoreResponseDto> responseDtoPage = storeService.getStores(pageable);
-        return ResponseEntity.ok(responseDtoPage);
+        return ResponseEntity.ok(storeService.getStores(pageable));
     }
 
-    @PutMapping("/stores/{storeId}")
-    public ResponseEntity<StoreResponseDto> update(@PathVariable Long storeId, @RequestBody StoreRequestDto requestDto) {
-        StoreResponseDto responseDto = storeService.update(storeId, requestDto);
-        return ResponseEntity.ok(responseDto);
+    // 가게 부분 수정
+    @PatchMapping("/stores/{storeId}")
+    public ResponseEntity<StoreResponseDto> updateStore(@Auth AuthUser authUser,
+                                                        @PathVariable Long storeId,
+                                                        @RequestBody StoreUpdateRequestDto requestDto) {
+        return ResponseEntity.ok(storeService.updateStore(authUser, storeId, requestDto));
     }
 
-    @DeleteMapping("/stores/{storeId}")
-    public ResponseEntity<Void> delete(@PathVariable Long storeId) {
-        storeService.delete(storeId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    // 가게 상태 변경
+    @PatchMapping("/stores/{storeId}/status")
+    public ResponseEntity<StoreStatusUpdateDto> updateStoreStatus(@Auth AuthUser authUser,
+                                                              @PathVariable Long storeId,
+                                                              @RequestBody StoreStatusUpdateDto statusUpdateDto) {
+        return ResponseEntity.ok(storeService.updateStoreStatus(authUser, storeId, statusUpdateDto.isStoreStatus()));
     }
 }
