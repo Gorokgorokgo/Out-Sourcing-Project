@@ -1,9 +1,11 @@
 package com.sparta.outsourcing.dto.menu;
 
 import com.sparta.outsourcing.entity.Menu;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class MenuResponseDto {
     private Long storeId;
     private Long menuId;
