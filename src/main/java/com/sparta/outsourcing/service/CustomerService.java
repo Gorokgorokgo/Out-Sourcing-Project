@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService {
 
-    private final CustomerRepository customerRepository;
+    private final CustomerRepository customersRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
@@ -30,7 +30,7 @@ public class CustomerService {
     public CustomerResponseDto create(CustomerRequestDto customerRequestDto) {
 
         String password = passwordEncoder.encode(customerRequestDto.getPassword());
-        Optional<Customer> checkEmail = customerRepository.findByEmail(customerRequestDto.getEmail());
+        Optional<Customer> checkEmail = customersRepository.findByEmail(customerRequestDto.getEmail());
         if (checkEmail.isPresent()) throw new DataDuplicationException("중복된 이메일 입니다.");
 
 
@@ -38,7 +38,7 @@ public class CustomerService {
         UserRoleEnum role = UserRoleEnum.USER;
         if (customerRequestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(customerRequestDto.getAdminToken())) {
-                throw new DataNotFoundException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new InvalidAdminTokenException("관리자 암호가 틀려 등록이 불가능합니다.");
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -49,19 +49,19 @@ public class CustomerService {
                 password,
                 customerRequestDto.getBirthday(),
                 customerRequestDto.getAddress(),
-                role
-        );
-
-        Customer saveCustomer = customerRepository.save(customer);
+                role,
+                null);
+        Customer saveCustomer = customersRepository.save(customer);
 
         return new CustomerResponseDto(saveCustomer);
     }
 
     public CustomerResponseDto myInformationView(String email) {
 
-        Customer user = findUser(email);
+        Customer customer = findUser(email);
 
-        return new CustomerResponseDto(user);
+
+        return new CustomerResponseDto(customer);
 
     }
 
@@ -90,7 +90,7 @@ public class CustomerService {
 
     }
 
-    public String delete(String email, LoginRequestDto loginRequestDto) throws DifferentUsersException {
+    public String delete(String email, LoginRequestDto loginRequestDto) {
         Customer customer = findUser(loginRequestDto.getEmail());
 
         if (!email.equals(customer.getEmail())) {
@@ -101,40 +101,39 @@ public class CustomerService {
             throw new PasswordMismatchException(loginRequestDto.getEmail() + "의 패스워드가 올바르지 않습니다.");
         }
 
-        customer.deleteUpdate(java.time.LocalDateTime.now());
+        customer.membershipWithdrawalTime(java.time.LocalDateTime.now());
 
         return "삭제 완료";
     }
 
-    public String login(LoginRequestDto requestDto) {
-        // 입력된 이메일로 유저 찾기
-        Customer customer = customerRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new DataNotFoundException("이메일 또는 비밀번호가 일치하지 않습니다."));
+    public String login(LoginRequestDto requestDto) throws WithdrawnMemberException {
+        //입력된 이메일로 유저찾기
+        Customer customer = customersRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
 
-        // 비밀번호 일치하는지 확인
+        //비밀번호 일치하는지 확인
         if (!passwordEncoder.matches(requestDto.getPassword(), customer.getPassword())) {
-            throw new PasswordMismatchException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new PasswordMismatchException(requestDto.getEmail() + "의 패스워드가 올바르지 않습니다.");
         }
 
-        // 탈퇴 유저 로그인 방지
-        if (customer.getDateDeleted() != null) {
-            throw new WithdrawnMemberException("이미 탈퇴한 회원입니다.");
-        }
+        //탈퇴유저 로그인 방지
+        if (customer.getDateDeleted() == null) {
 
-        // JWT 토큰 반환
-        return jwtUtil.createToken(
-                customer.getCustomerId(),
-                customer.getEmail(),
-                customer.getRole()
-        );
+            //존재하는 유저가 비밀번호를 알맞게 입력시 JWT토큰반환
+            return jwtUtil.createToken(
+                    customer.getCustomerId(),
+                    customer.getEmail(),
+                    customer.getRole()
+            );
+        } else {
+            throw new WithdrawnMemberException("이미 탈퇴한 회원 입니다.");
+        }
     }
 
-    private Customer findUser(String email) {
-        Customer user = customerRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
-        if (user.getDateDeleted() != null) {
-            throw new DataNotFoundException("이미 삭제된 유저 입니다");
+    public Customer findUser(String email) {
+        Customer customer = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
+        if (customer.getDateDeleted() != null) {
+            throw new DataNotFoundException("이미 탈퇴된 유저 입니다");
         }
-
-        return user;
+        return customer;
     }
 }

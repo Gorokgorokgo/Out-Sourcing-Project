@@ -11,4 +11,6 @@ import java.util.List;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
     Page<Menu> findByMenuStatusIn(List<MenuStatus> statuses, Pageable pageable);
+
+    List<Menu> findAllByMenuNameContains(String keyword);
 }

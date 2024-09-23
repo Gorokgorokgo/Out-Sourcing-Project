@@ -17,12 +17,12 @@ public class CustomerResponseDto {
     private UserRoleEnum roleEnum;
 
 
-    public CustomerResponseDto(Customer customers) {
-        this.name = customers.getName();
-        this.email = customers.getEmail();
-        this.address = customers.getAddress();
-        this.birthday = customers.getBirthday();
-        this.roleEnum = customers.getRole();
+    public CustomerResponseDto(Customer customer) {
+        this.name = customer.getName();
+        this.email = customer.getEmail();
+        this.address = customer.getAddress();
+        this.birthday = customer.getBirthday();
+        this.roleEnum = customer.getRole();
     }
 
 }

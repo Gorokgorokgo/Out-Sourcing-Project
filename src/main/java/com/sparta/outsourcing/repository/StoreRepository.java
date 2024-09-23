@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
+    List<Store> findAllByStoreNameContains(String name);
 
     // 사장님이 운영 중인 가게 수 조회
     int countByCustomer_CustomerIdAndStoreStatus(Long customerId, boolean storeStatus);

@@ -2,8 +2,8 @@ package com.sparta.outsourcing.controller;
 
 import com.sparta.outsourcing.annotation.Auth;
 import com.sparta.outsourcing.dto.customer.*;
-import com.sparta.outsourcing.exception.customer.DifferentUsersException;
-import com.sparta.outsourcing.exception.customer.WithdrawnMemberException;
+import com.sparta.outsourcing.exception.DifferentUsersException;
+import com.sparta.outsourcing.exception.WithdrawnMemberException;
 import com.sparta.outsourcing.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,12 @@ public class CustomerController {
 
     @PostMapping("/users/signup")
     public ResponseEntity<CustomerResponseDto> create(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
-        return ResponseEntity.ok(customerService.create(customerRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(customerService.create(customerRequestDto));
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<String> loginResponseDto(@Valid @RequestBody LoginRequestDto requestDto)  {
-        String token = customerService.login(requestDto);
-        return ResponseEntity.ok().header("Authorization", token).body("로그인 성공");
+    public ResponseEntity<Object> loginResponseDto(@Valid @RequestBody LoginRequestDto requestDto) throws WithdrawnMemberException {
+        return ResponseEntity.status(HttpStatus.OK).header("Authorization",customerService.login(requestDto)).build();
     }
 
     @GetMapping("/users")

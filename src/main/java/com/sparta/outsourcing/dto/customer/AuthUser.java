@@ -10,7 +10,7 @@ public class AuthUser {
     private final UserRoleEnum role;
 
 
-    public AuthUser(Long customerId, String userEmail, UserRoleEnum role) {
+    public AuthUser(Long customerId ,String userEmail, UserRoleEnum role) {
         this.customerId = customerId;
         this.email = userEmail;
         this.role =  role;

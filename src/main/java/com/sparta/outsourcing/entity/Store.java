@@ -44,6 +44,8 @@ public class Store {
     @OneToMany(mappedBy = "store", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Menu> menus = new ArrayList<>();
 
+    @Column(name = "address", nullable = false)
+    private String address;
 
     public Store(Customer customer, StoreRequestDto requestDto) {
         this.customer = customer;
