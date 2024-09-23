@@ -14,15 +14,16 @@ public class Menu {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "menu_id")
   private Long menuId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false, name = "store_id")
   private Store store;
 
-  @Column(nullable = false)
+  @Column(name = "menu_name", nullable = false)
   private String menuName;
 
-  @Column(nullable = false)
+  @Column(name = "menu_price", nullable = false)
   private int menuPrice;
 }

@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public class MenuSimpleResponseDto {
     private Long menuId;
-    private String name;
+    private String menuName;
 
     public MenuSimpleResponseDto(Menu menu) {
-        this.menuId = menu.getId();
-        this.name = menu.getName();
+        this.menuId = menu.getMenuId();
+        this.menuName = menu.getMenuName();
     }
 }

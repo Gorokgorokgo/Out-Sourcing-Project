@@ -9,7 +9,7 @@ public class StoreResponseDto {
     private String name;
 
     public StoreResponseDto(Store store) {
-        this.id = store.getId();
-        this.name = store.getName();
+        this.id = store.getStoreId();
+        this.name = store.getStoreName();
     }
 }

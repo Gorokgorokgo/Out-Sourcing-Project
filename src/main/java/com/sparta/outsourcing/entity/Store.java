@@ -11,17 +11,17 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
-@Setter
 @Table(name="stores")
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "store_id")
+    private Long storeId;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "store_name", nullable = false)
+    private String storeName;
 
-    @Column(nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @OneToMany (mappedBy = "store", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)

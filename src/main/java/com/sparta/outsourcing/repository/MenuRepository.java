@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
-    List<Menu> findAllByNameContains(String keyword);
+    List<Menu> findAllByMenuNameContains(String keyword);
 }

@@ -30,16 +30,16 @@ public class Order {
   @JoinColumn(nullable = false, name = "store_id")
   private Store store;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "delivery_address")
   private String deliveryAddress;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "total_price")
   private Long totalPrice;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "request")
   private String request;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "order_date")
   @CreationTimestamp
   private LocalDateTime orderDate;
 

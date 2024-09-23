@@ -12,8 +12,8 @@ public class StoreDetailResponseDto {
     private MenuSimpleResponseDto menu;
 
     public StoreDetailResponseDto(Menu menu, Store store) {
-        this.id = store.getId();
-        this.name = store.getName();
+        this.id = store.getStoreId();
+        this.name = store.getStoreName();
         this.menu = new MenuSimpleResponseDto(menu);
     }
 }

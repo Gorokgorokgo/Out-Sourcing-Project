@@ -71,6 +71,7 @@ public class JwtFilter implements Filter {
         } catch (Exception e) {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT 토큰 검증 중 오류가 발생했습니다.");
         }
+        System.out.println(token);
     }
 
     @Override

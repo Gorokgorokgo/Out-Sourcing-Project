@@ -26,7 +26,7 @@ public class MenuCart {
   @JoinColumn(name = "cart_id")
   private Cart cart;
 
-  @Column(name = "quantity")
+  @Column(nullable = false, name = "quantity")
   private Long quantity;
 
   public MenuCart(Menu menu, Cart cart, Long quantity) {

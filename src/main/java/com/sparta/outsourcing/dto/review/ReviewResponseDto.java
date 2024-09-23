@@ -18,7 +18,7 @@ public class ReviewResponseDto {
     public ReviewResponseDto(Review saveReview) {
         this.reviewId = saveReview.getId();
         this.customerId = saveReview.getCustomer().getCustomerId();
-        this.storeId = saveReview.getStore().getId();
+        this.storeId = saveReview.getStore().getStoreId();
         this.star = saveReview.getStar();
         this.content = saveReview.getContent();
         this.createdAt = saveReview.getCreatedAt();
