@@ -1,6 +1,6 @@
 package com.sparta.outsourcing.dto.customer;
 
-import com.sparta.outsourcing.entity.UserRoleEnum;
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -31,7 +31,6 @@ public class CustomerRequestDto {
 
     @NotNull(message = "필수 입력 항목입니다.")
     private String address;
-
 
 
     private boolean admin = false;

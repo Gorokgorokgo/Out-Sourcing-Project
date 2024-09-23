@@ -1,5 +1,7 @@
 package com.sparta.outsourcing.entity;
 
+
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import com.sparta.outsourcing.dto.customer.CustomerUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,7 +35,7 @@ public class Customer extends Timestamped {
     @Column(name = "birthday", nullable = false)
     private Date birthday;
 
-    @Column(name = "address", length = 50)
+    @Column(name = "address", nullable = false, length = 50)
     private String address;
 
     @Column(name = "deleted_at")

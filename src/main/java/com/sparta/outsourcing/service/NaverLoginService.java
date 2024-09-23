@@ -4,10 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sparta.outsourcing.config.PasswordEncoder;
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import com.sparta.outsourcing.dto.customer.NaverProfileResponseDto;
 import com.sparta.outsourcing.dto.customer.NaverTokenDto;
 import com.sparta.outsourcing.entity.Customer;
-import com.sparta.outsourcing.entity.UserRoleEnum;
+
 import com.sparta.outsourcing.jwt.JwtUtil;
 import com.sparta.outsourcing.repository.CustomerRepository;
 import jakarta.servlet.http.HttpServletResponse;
