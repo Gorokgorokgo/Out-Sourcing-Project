@@ -1,7 +1,7 @@
 package com.sparta.outsourcing.dto.customer;
 
 import com.sparta.outsourcing.entity.Customer;
-import com.sparta.outsourcing.entity.UserRoleEnum;
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import lombok.Getter;
 
 import java.util.Date;
