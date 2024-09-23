@@ -90,7 +90,7 @@ public class CustomerService {
 
     }
 
-    public String delete(String email, LoginRequestDto loginRequestDto) throws DifferentUsersException {
+    public String delete(String email, LoginRequestDto loginRequestDto) {
         Customer customer = findUser(loginRequestDto.getEmail());
 
         if (!email.equals(customer)) {
@@ -101,7 +101,7 @@ public class CustomerService {
             throw new PasswordMismatchException(loginRequestDto.getEmail() + "의 패스워드가 올바르지 않습니다.");
         }
 
-        customer.membershipWithdrawalTime(java.time.LocalDateTime.now());
+        customer.deleteUpdate(java.time.LocalDateTime.now());
 
         return "삭제 완료";
     }
@@ -120,7 +120,7 @@ public class CustomerService {
 
             //존재하는 유저가 비밀번호를 알맞게 입력시 JWT토큰반환
             return jwtUtil.createToken(
-                    customer.getCustomerId(),
+                    customer.getCustomersId(),
                     customer.getEmail(),
                     customer.getRole()
             );

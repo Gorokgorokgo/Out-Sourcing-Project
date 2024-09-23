@@ -4,6 +4,7 @@ import com.sparta.outsourcing.dto.customer.CustomerUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -12,12 +13,14 @@ import java.util.Date;
 @Entity
 @Table(name = "customers")
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Customer extends Timestamped {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
-    private Long customerId;
+    private Long customersId;
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
@@ -34,7 +37,7 @@ public class Customer extends Timestamped {
     @Column(name = "address", nullable = false, length = 50)
     private String address;
 
-    @Column(name = "deleted_at")
+    @Column(name = "date_deleted")
     private LocalDateTime dateDeleted;
 
     @Column(nullable = false)
@@ -59,7 +62,7 @@ public class Customer extends Timestamped {
         this.password = newPassword;
     }
 
-    public void membershipWithdrawalTime(LocalDateTime deleteTime) {
+    public void deleteUpdate(LocalDateTime deleteTime) {
         this.dateDeleted = deleteTime;
     }
 
