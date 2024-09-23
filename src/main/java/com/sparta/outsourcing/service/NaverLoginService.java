@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sparta.outsourcing.config.PasswordEncoder;
-import com.sparta.outsourcing.dto.customer.CustomerResponseDto;
 import com.sparta.outsourcing.dto.customer.NaverProfileResponseDto;
 import com.sparta.outsourcing.dto.customer.NaverTokenDto;
 import com.sparta.outsourcing.entity.Customer;
@@ -30,7 +29,6 @@ import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

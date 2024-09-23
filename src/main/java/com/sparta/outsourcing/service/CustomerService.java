@@ -90,7 +90,7 @@ public class CustomerService {
 
     }
 
-    public String delete(String email, LoginRequestDto loginRequestDto) throws DifferentUsersException {
+    public String delete(String email, LoginRequestDto loginRequestDto) {
         Customer customer = findUser(loginRequestDto.getEmail());
 
         if (!email.equals(customer.getEmail())) {
@@ -101,7 +101,7 @@ public class CustomerService {
             throw new PasswordMismatchException(loginRequestDto.getEmail() + "의 패스워드가 올바르지 않습니다.");
         }
 
-        customer.membershipWithdrawalTime(java.time.LocalDateTime.now());
+        customer.deleteUpdate(java.time.LocalDateTime.now());
 
         return "삭제 완료";
     }
@@ -120,7 +120,7 @@ public class CustomerService {
 
             //존재하는 유저가 비밀번호를 알맞게 입력시 JWT토큰반환
             return jwtUtil.createToken(
-                    customer.getCustomerId(),
+                    customer.getCustomersId(),
                     customer.getEmail(),
                     customer.getRole()
             );
@@ -129,7 +129,7 @@ public class CustomerService {
         }
     }
 
-     Customer findUser(String email) {
+    public Customer findUser(String email) {
         Customer customer = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
         if (customer.getDateDeleted() != null) {
             throw new DataNotFoundException("이미 탈퇴된 유저 입니다");

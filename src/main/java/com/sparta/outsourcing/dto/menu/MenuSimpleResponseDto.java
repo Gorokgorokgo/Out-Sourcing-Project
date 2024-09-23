@@ -9,7 +9,7 @@ public class MenuSimpleResponseDto {
     private String menuName;
 
     public MenuSimpleResponseDto(Menu menu) {
-        this.menuId = menu.getId();
+        this.menuId = menu.getMenuId();
         this.menuName = menu.getMenuName();
     }
 }

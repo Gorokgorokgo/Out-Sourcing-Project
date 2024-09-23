@@ -1,7 +1,8 @@
 package com.sparta.outsourcing.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,24 +10,24 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
-@Setter
 @Table(name="stores")
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "store_id")
+    private Long storeId;
 
-    @Column(nullable = false)
+    @Column(name = "store_name", nullable = false)
     private String storeName;
 
-    @Column(nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @OneToMany (mappedBy = "store", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     List<Menu> menuList = new ArrayList<>();
 
     public Store(Long id, String name, String address) {
-        this.id = id;
+        this.storeId = id;
         this.storeName = name;
         this.address = address;
     }

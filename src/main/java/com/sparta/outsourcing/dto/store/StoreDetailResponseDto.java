@@ -7,12 +7,12 @@ import lombok.Getter;
 
 @Getter
 public class StoreDetailResponseDto {
-    private Long id;
+    private Long storeId;
     private String storeName;
     private MenuSimpleResponseDto menu;
 
     public StoreDetailResponseDto(Menu menu, Store store) {
-        this.id = store.getId();
+        this.storeId = store.getStoreId();
         this.storeName = store.getStoreName();
         this.menu = new MenuSimpleResponseDto(menu);
     }
