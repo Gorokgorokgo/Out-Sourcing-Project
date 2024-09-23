@@ -5,24 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "menus")
+@Table(name = "menus_orders")
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Menu {
+public class MenuOrder {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long menuId;
+  private Long menuOrderId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(nullable = false, name = "store_id")
-  private Store store;
+  @JoinColumn(nullable = false, name = "menu_id")
+  private Menu menu;
 
-  @Column(nullable = false)
-  private String menuName;
-
-  @Column(nullable = false)
-  private int menuPrice;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(nullable = false, name = "order_id")
+  private Order order;
 }
