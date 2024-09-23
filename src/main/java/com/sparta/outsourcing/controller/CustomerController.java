@@ -21,7 +21,6 @@ public class CustomerController {
     @PostMapping("/users/signup")
     public ResponseEntity<CustomerResponseDto> create(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(customerService.create(customerRequestDto));
-
     }
 
     @PostMapping("/users/login")

@@ -74,5 +74,10 @@ public class GlobalExceptionController {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(HttpStatus.CONFLICT + " : " + ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidAdminTokenException.class)
+    public ResponseEntity<String> InvalidAdminToken(InvalidAdminTokenException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST + " : " + ex.getMessage());
+    }
+
 }
 

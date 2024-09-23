@@ -38,7 +38,7 @@ public class CustomerService {
         UserRoleEnum role = UserRoleEnum.USER;
         if (customerRequestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(customerRequestDto.getAdminToken())) {
-                throw new DataNotFoundException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new InvalidAdminTokenException("관리자 암호가 틀려 등록이 불가능합니다.");
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -58,9 +58,9 @@ public class CustomerService {
 
     public CustomerResponseDto myInformationView(String email) {
 
-        Customer user = findUser(email);
+        Customer customer = findUser(email);
 
-        return new CustomerResponseDto(user);
+        return new CustomerResponseDto(customer);
 
     }
 
@@ -92,7 +92,7 @@ public class CustomerService {
     public String delete(String email, LoginRequestDto loginRequestDto) throws DifferentUsersException {
         Customer customer = findUser(loginRequestDto.getEmail());
 
-        if (!email.equals(customer)) {
+        if (!email.equals(customer.getEmail())) {
             throw new DifferentUsersException("로그인 사용자와 일치 하지 않습니다.");
         }
 
@@ -128,12 +128,11 @@ public class CustomerService {
         }
     }
 
-    private Customer findUser(String email) {
+     Customer findUser(String email) {
         Customer customer = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
         if (customer.getDateDeleted() != null) {
-            throw new DataNotFoundException("이미 삭제된 유저 입니다");
+            throw new DataNotFoundException("이미 탈퇴된 유저 입니다");
         }
-
         return customer;
     }
 }
