@@ -4,6 +4,7 @@ import com.sparta.outsourcing.dto.customer.CustomerUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Entity
 @Table(name = "customers")
 @NoArgsConstructor
+@Setter
 public class Customer extends Timestamped {
 
     @Id

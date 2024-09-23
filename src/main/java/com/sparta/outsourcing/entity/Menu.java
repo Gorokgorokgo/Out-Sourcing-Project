@@ -14,7 +14,7 @@ public class Menu {
     private Long id;
 
     @Column(nullable = false, length = 50)
-    private String name;
+    private String menuName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)

@@ -1,9 +1,7 @@
 package com.sparta.outsourcing.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +17,17 @@ public class Store {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String storeName;
 
     @Column(nullable = false)
     private String address;
 
     @OneToMany (mappedBy = "store", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     List<Menu> menuList = new ArrayList<>();
+
+    public Store(Long id, String name, String address) {
+        this.id = id;
+        this.storeName = name;
+        this.address = address;
+    }
 }
