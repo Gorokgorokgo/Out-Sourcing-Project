@@ -7,6 +7,7 @@ import com.sparta.outsourcing.dto.customer.CustomerUpdateRequestDto;
 import com.sparta.outsourcing.dto.customer.LoginRequestDto;
 import com.sparta.outsourcing.entity.Customer;
 import com.sparta.outsourcing.constant.UserRoleEnum;
+import com.sparta.outsourcing.exception.InvalidAdminTokenException;
 import com.sparta.outsourcing.exception.customer.*;
 import com.sparta.outsourcing.jwt.JwtUtil;
 import com.sparta.outsourcing.repository.CustomerRepository;
@@ -90,7 +91,7 @@ public class CustomerService {
 
     }
 
-    public String delete(String email, LoginRequestDto loginRequestDto) {
+    public String delete(String email, LoginRequestDto loginRequestDto) throws DifferentUsersException {
         Customer customer = findUser(loginRequestDto.getEmail());
 
         if (!email.equals(customer.getEmail())) {
