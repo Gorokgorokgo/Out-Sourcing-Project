@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public class StoreResponseDto {
     private Long id;
-    private String name;
+    private String storeName;
 
     public StoreResponseDto(Store store) {
         this.id = store.getId();
-        this.name = store.getName();
+        this.storeName = store.getStoreName();
     }
 }

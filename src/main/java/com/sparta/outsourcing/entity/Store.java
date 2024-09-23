@@ -17,7 +17,7 @@ public class Store {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String storeName;
 
     @Column(nullable = false)
     private String address;
@@ -27,7 +27,7 @@ public class Store {
 
     public Store(Long id, String name, String address) {
         this.id = id;
-        this.name = name;
+        this.storeName = name;
         this.address = address;
     }
 }
