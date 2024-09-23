@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name="reivews")
+@Table(name="reviews")
 public class Review extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,7 @@ public class Review extends Timestamped{
     @Column(nullable = false)
     private int star;
 
+    @Column(length = 255)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
