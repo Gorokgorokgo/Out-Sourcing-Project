@@ -3,7 +3,7 @@ package com.sparta.outsourcing.config;
 
 import com.sparta.outsourcing.annotation.Auth;
 import com.sparta.outsourcing.dto.customer.AuthUser;
-import com.sparta.outsourcing.entity.UserRoleEnum;
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;

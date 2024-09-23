@@ -40,9 +40,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/users")
-    public String delete(@Auth AuthUser authUser, @Valid @RequestBody LoginRequestDto loginRequestDto) throws DifferentUsersException {
+    public String delete(@Auth AuthUser authUser, @Valid @RequestBody LoginRequestDto loginRequestDto) throws DifferentUsersException, com.sparta.outsourcing.exception.customer.DifferentUsersException {
         return customerService.delete(authUser.getEmail(), loginRequestDto);
     }
-
-
 }

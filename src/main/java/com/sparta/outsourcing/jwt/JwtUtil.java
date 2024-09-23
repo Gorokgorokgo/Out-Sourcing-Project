@@ -1,6 +1,6 @@
 package com.sparta.outsourcing.jwt;
 
-import com.sparta.outsourcing.entity.UserRoleEnum;
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -45,7 +45,7 @@ public class JwtUtil {
                 Jwts.builder()
                         .setSubject(String.valueOf(customerId)) // 사용자 식별자값(ID)
                         .claim("email", email)
-                        .claim("role", role) // 사용자 권한
+                        .claim("role", role.name())
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘

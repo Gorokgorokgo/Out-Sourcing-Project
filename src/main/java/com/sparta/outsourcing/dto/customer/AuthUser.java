@@ -1,11 +1,10 @@
 package com.sparta.outsourcing.dto.customer;
 
-import com.sparta.outsourcing.entity.UserRoleEnum;
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import lombok.Getter;
 
 @Getter
 public class AuthUser {
-
     private final Long customerId;
     private final String email;
     private final UserRoleEnum role;
