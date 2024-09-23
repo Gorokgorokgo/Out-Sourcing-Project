@@ -9,7 +9,7 @@ import com.sparta.outsourcing.entity.Customer;
 import com.sparta.outsourcing.entity.UserRoleEnum;
 import com.sparta.outsourcing.exception.*;
 import com.sparta.outsourcing.jwt.JwtUtil;
-import com.sparta.outsourcing.repository.CustomersRepository;
+import com.sparta.outsourcing.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService {
 
-    private final CustomersRepository customersRepository;
+    private final CustomerRepository customersRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
@@ -38,7 +38,7 @@ public class CustomerService {
         UserRoleEnum role = UserRoleEnum.USER;
         if (customerRequestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(customerRequestDto.getAdminToken())) {
-                throw new DataNotFoundException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new InvalidAdminTokenException("관리자 암호가 틀려 등록이 불가능합니다.");
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -49,9 +49,8 @@ public class CustomerService {
                 password,
                 customerRequestDto.getBirthday(),
                 customerRequestDto.getAddress(),
-                role
-        );
-
+                role,
+                null);
         Customer saveCustomer = customersRepository.save(customer);
 
         return new CustomerResponseDto(saveCustomer);
@@ -59,9 +58,9 @@ public class CustomerService {
 
     public CustomerResponseDto myInformationView(String email) {
 
-        Customer user = findUser(email);
+        Customer customer = findUser(email);
 
-        return new CustomerResponseDto(user);
+        return new CustomerResponseDto(customer);
 
     }
 
@@ -93,7 +92,7 @@ public class CustomerService {
     public String delete(String email, LoginRequestDto loginRequestDto) throws DifferentUsersException {
         Customer customer = findUser(loginRequestDto.getEmail());
 
-        if (!email.equals(customer)) {
+        if (!email.equals(customer.getEmail())) {
             throw new DifferentUsersException("로그인 사용자와 일치 하지 않습니다.");
         }
 
@@ -129,12 +128,11 @@ public class CustomerService {
         }
     }
 
-    private Customer findUser(String email) {
-        Customer user = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
-        if (user.getDateDeleted() != null) {
-            throw new DataNotFoundException("이미 삭제된 유저 입니다");
+     Customer findUser(String email) {
+        Customer customer = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
+        if (customer.getDateDeleted() != null) {
+            throw new DataNotFoundException("이미 탈퇴된 유저 입니다");
         }
-
-        return user;
+        return customer;
     }
 }

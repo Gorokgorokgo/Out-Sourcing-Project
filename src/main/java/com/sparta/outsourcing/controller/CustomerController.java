@@ -19,9 +19,8 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/users/signup")
-    public String create(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
-        ResponseEntity.status(HttpStatus.OK).body(customerService.create(customerRequestDto));
-        return "redirect:/api/users/login";
+    public ResponseEntity<CustomerResponseDto> create(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(customerService.create(customerRequestDto));
     }
 
     @PostMapping("/users/login")
@@ -44,4 +43,6 @@ public class CustomerController {
     public String delete(@Auth AuthUser authUser, @Valid @RequestBody LoginRequestDto loginRequestDto) throws DifferentUsersException {
         return customerService.delete(authUser.getEmail(), loginRequestDto);
     }
+
+
 }
