@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.service;
 
+import com.sparta.outsourcing.dto.customer.AuthUser;
 import com.sparta.outsourcing.dto.review.ReviewCreateRequestDto;
 import com.sparta.outsourcing.dto.review.ReviewResponseDto;
 import com.sparta.outsourcing.dto.review.ReviewSimpleResponseDto;
@@ -28,8 +29,8 @@ public class ReviewService {
 
 
     @Transactional
-    public ReviewResponseDto createReview(ReviewCreateRequestDto requestDto) {
-        Customer customer = customerRepository.findById(requestDto.getCustomerId()).orElseThrow(()-> new NullPointerException("해당하는 고객이 존재하지 않습니다."));
+    public ReviewResponseDto createReview(Long customId, ReviewCreateRequestDto requestDto) {
+        Customer customer = customerRepository.findByCustomerId(customId).orElseThrow(()-> new NullPointerException("해당하는 고객이 존재하지 않습니다."));
         Store store = storeRepository.findById(requestDto.getStoreId()).orElseThrow(()->new NullPointerException("해당하는 매장이 존재하지 않습니다."));
         Review review = new Review(customer, store, requestDto);
         Review saveReview = reviewRepository.save(review);
@@ -45,7 +46,7 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto updateReview(Long reviewId, Long customerId, ReviewUpdateRequestDto requestDto) {
-        customerRepository.findById(customerId).orElseThrow(()-> new NullPointerException("해당 고객이 존재하지 않습니다."));
+        customerRepository.findByCustomerId(customerId).orElseThrow(()-> new NullPointerException("해당 고객이 존재하지 않습니다."));
         Review review = reviewRepository.findById(reviewId).orElseThrow(()-> new NullPointerException("해당 댓글이 존재하지 않습니다."));
         if(!customerId.equals(review.getCustomer().getCustomerId())) throw new IllegalArgumentException("작성자가 아니므로 수정이 불가능합니다.");
         review.update(requestDto);
@@ -54,7 +55,7 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(Long reviewId, Long customerId) {
-        customerRepository.findById(customerId).orElseThrow(()-> new NullPointerException("해당 고객이 존재하지 않습니다."));
+        customerRepository.findByCustomerId(customerId).orElseThrow(()-> new NullPointerException("해당 고객이 존재하지 않습니다."));
         Review review = reviewRepository.findById(reviewId).orElseThrow(()-> new NullPointerException("해당 댓글이 존재하지 않습니다."));
         if(!customerId.equals(review.getCustomer().getCustomerId())) throw new IllegalArgumentException("작성자가 아니므로 삭제가 불가능합니다.");
         reviewRepository.deleteById(reviewId);

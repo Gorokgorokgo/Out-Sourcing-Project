@@ -1,9 +1,8 @@
 package com.sparta.outsourcing.controller;
 
-import com.sparta.outsourcing.dto.review.ReviewSimpleResponseDto;
-import com.sparta.outsourcing.dto.review.ReviewCreateRequestDto;
-import com.sparta.outsourcing.dto.review.ReviewResponseDto;
-import com.sparta.outsourcing.dto.review.ReviewUpdateRequestDto;
+import com.sparta.outsourcing.annotation.Auth;
+import com.sparta.outsourcing.dto.customer.AuthUser;
+import com.sparta.outsourcing.dto.review.*;
 import com.sparta.outsourcing.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +17,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("")
-    public ResponseEntity<ReviewResponseDto> createReview (@RequestBody ReviewCreateRequestDto requestDto) {
-        return ResponseEntity.ok(reviewService.createReview(requestDto));
+    public ResponseEntity<ReviewResponseDto> createReview (@Auth AuthUser authUser, @RequestBody ReviewCreateRequestDto requestDto) {
+        return ResponseEntity.ok(reviewService.createReview(authUser.getCustomerId(), requestDto));
     }
 
     @GetMapping("")
@@ -31,16 +30,15 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviews(page, size, storeId, minStar, maxStar));
     }
 
-    @PutMapping("/{reviewId}/{customerId}")
-    public ResponseEntity<ReviewResponseDto> updateReview (@PathVariable Long reviewId,@PathVariable Long customerId,  @RequestBody ReviewUpdateRequestDto requestDto) {
-        return ResponseEntity.ok(reviewService.updateReview(reviewId,customerId, requestDto));
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ReviewResponseDto> updateReview (@PathVariable Long reviewId, @Auth AuthUser authUser, @RequestBody ReviewUpdateRequestDto requestDto) {
+        return ResponseEntity.ok(reviewService.updateReview(reviewId, authUser.getCustomerId(), requestDto));
     }
 
-    @DeleteMapping("/{reviewId}/{customerId}")
-    public ResponseEntity deleteReview (@PathVariable Long reviewId,@PathVariable Long customerId) {
-        reviewService.deleteReview(reviewId, customerId);
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity deleteReview (@Auth AuthUser authUser,@PathVariable Long reviewId) {
+        reviewService.deleteReview(reviewId, authUser.getCustomerId());
         return ResponseEntity.noContent().build();
     }
-
 
 }
