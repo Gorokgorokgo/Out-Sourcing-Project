@@ -20,7 +20,7 @@ public class Customer extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
-    private Long customerId;
+    private Long customersId;
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
