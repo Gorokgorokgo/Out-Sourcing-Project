@@ -60,6 +60,7 @@ public class CustomerService {
 
         Customer customer = findUser(email);
 
+
         return new CustomerResponseDto(customer);
 
     }
