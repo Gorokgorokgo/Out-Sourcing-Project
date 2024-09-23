@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class Search extends Timestamped2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="search_id")
     private Long id;
 
     @Column(nullable = false)

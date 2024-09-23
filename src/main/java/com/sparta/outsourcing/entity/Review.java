@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class Review extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="review_id")
     private Long id;
 
     @Column(nullable = false)
