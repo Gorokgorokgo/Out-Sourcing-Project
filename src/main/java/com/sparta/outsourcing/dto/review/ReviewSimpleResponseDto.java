@@ -1,9 +1,12 @@
 package com.sparta.outsourcing.dto.review;
 
+import com.sparta.outsourcing.entity.Image;
 import com.sparta.outsourcing.entity.Review;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class ReviewSimpleResponseDto {
@@ -12,12 +15,15 @@ public class ReviewSimpleResponseDto {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private List<Image> images = new ArrayList<>();
 
-    public ReviewSimpleResponseDto(Review review) {
+
+    public ReviewSimpleResponseDto(Review review, List<Image> images) {
         this.reviewId = review.getId();
         this.star = review.getStar();
         this.content = review.getContent();
         this.createdAt = review.getCreatedAt();
         this.modifiedAt = review.getUpdatedAt();
+        this.images = images;
     }
 }

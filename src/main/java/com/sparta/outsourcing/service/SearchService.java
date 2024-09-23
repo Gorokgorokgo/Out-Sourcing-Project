@@ -43,7 +43,7 @@ public class SearchService {
         String addressGu = addressCut[0]+" "+addressCut[1];
         //가게 검색
         //가게 이름이 일치하는 경우 찾기
-        List<Store> storeList = storeRepository.findAllByNameContains(keyword);
+        List<Store> storeList = storeRepository.findAllByStoreNameContains(keyword);
         //가게가 없으면 검색된 가게 결과 없다고 오류
         if(storeList.isEmpty()) log.info("통합검색 :: 가게 검색 결과 없음");
         //결과가 15개 이상이면 같은 동에 있는 것만 전달
@@ -63,7 +63,7 @@ public class SearchService {
 
         //주소 앞부분 찾기
         //메뉴 이름에 keword가 들어간 menu찾기
-        List<Menu> menuList = menuRepository.findAllByNameContains(keyword);
+        List<Menu> menuList = menuRepository.findAllByMenuNameContains(keyword);
         //검색 결과 없으면 없다고 말함
         if(menuList.isEmpty()) log.info("통합검색 :: 메뉴 검색 결과 없음");
 

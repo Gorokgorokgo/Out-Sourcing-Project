@@ -79,10 +79,23 @@ public class GlobalExceptionController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST + " : " + ex.getMessage());
     }
 
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> InvalidAdminToken(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST + " : " + ex.getMessage());
     }
+
+
+    @ExceptionHandler(ImageUploadLimitExceededException.class)
+    public ResponseEntity<String> handleImageUploadLimitExceededException(ImageUploadLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST + " : " + ex.getMessage());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST + " : " + e.getMessage());
+    }
+
 
 }
 

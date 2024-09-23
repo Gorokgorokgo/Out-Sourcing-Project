@@ -30,4 +30,5 @@ public class Store {
         this.storeName = name;
         this.address = address;
     }
+
 }
