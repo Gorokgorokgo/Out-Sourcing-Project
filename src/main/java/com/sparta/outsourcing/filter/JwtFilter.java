@@ -34,7 +34,7 @@ public class JwtFilter implements Filter {
         String url = httpRequest.getRequestURI();
 
         // 특정 URL & HTTP 메서드에 대해 필터를 건너뛰도록 설정
-        if (url.equals("/api/users/signup") || url.equals("/api/users/login")) {
+        if (url.equals("/api/users/signup") || url.equals("/api/users/login") || url.startsWith("/api/naver")) {
             chain.doFilter(request, response);
             return;
         }
@@ -58,7 +58,7 @@ public class JwtFilter implements Filter {
             UserRoleEnum role = UserRoleEnum.valueOf(roleString);  // 문자열을 Enum으로 변환
 
 
-            httpRequest.setAttribute("customerId", claims.getSubject());
+            httpRequest.setAttribute("customerId", Long.parseLong(claims.getSubject()));
             httpRequest.setAttribute("role", role);
             httpRequest.setAttribute("email", claims.get("email", String.class));
 
