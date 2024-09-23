@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @Getter
 @Entity
@@ -20,4 +23,7 @@ public class Store {
 
     @Column(nullable = false)
     private String address;
+
+    @OneToMany (mappedBy = "store", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    List<Menu> menuList = new ArrayList<>();
 }
