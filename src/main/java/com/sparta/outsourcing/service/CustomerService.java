@@ -128,7 +128,7 @@ public class CustomerService {
         }
     }
 
-     Customer findUser(String email) {
+    public Customer findUser(String email) {
         Customer customer = customersRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("선택한 유저는 존재하지 않습니다."));
         if (customer.getDateDeleted() != null) {
             throw new DataNotFoundException("이미 탈퇴된 유저 입니다");

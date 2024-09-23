@@ -25,4 +25,13 @@ public class MenuCart {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cart_id")
   private Cart cart;
+
+  @Column(name = "quantity")
+  private Long quantity;
+
+  public MenuCart(Menu menu, Cart cart, Long quantity) {
+    this.menu = menu;
+    this.cart = cart;
+    this.quantity = quantity;
+  }
 }

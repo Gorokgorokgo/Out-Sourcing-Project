@@ -17,7 +17,7 @@ public class Cart {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "cart_id")
-  private long cartId;
+  private Long cartId;
 
   @OneToOne
   @JoinColumn(name = "customer_id")
@@ -27,9 +27,27 @@ public class Cart {
   @JoinColumn(name = "store_id")
   private Store store;
 
+  @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+  private List<MenuCart> menuCarts = new ArrayList<>();
+
   @Column(name = "total_quantity")
-  private long totalQuantity;
+  private Long totalQuantity;
 
   @Column(name = "total_price")
-  private long totalPrice;
+  private Long totalPrice;
+
+  public Cart(Customer customer, Store store, Long totalQuantity, Long totalPrice) {
+    this.customer = customer;
+    this.store = store;
+    this.totalQuantity = totalQuantity;
+    this.totalPrice = totalPrice;
+  }
+
+  public void addMenuCart(Menu menu, Long quantity) {
+    MenuCart menuCart = new MenuCart(menu, this, quantity);
+    menuCarts.add(menuCart);
+    this.store = menu.getStore();
+    this.totalQuantity += quantity;
+    this.totalPrice += menu.getMenuPrice() * quantity;
+  }
 }
