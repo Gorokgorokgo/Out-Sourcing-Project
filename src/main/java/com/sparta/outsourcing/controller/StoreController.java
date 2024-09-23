@@ -26,7 +26,7 @@ public class StoreController {
         return ResponseEntity.ok(storeService.createStore(authUser, requestDto));
     }
 
-    // 가게 단건 조회
+    // 가게 단건 조회 + 메뉴 조회
     @GetMapping("/stores/{storeId}")
     public ResponseEntity<StoreResponseDto> getStore(@PathVariable Long storeId) {
         return ResponseEntity.ok(storeService.getStore(storeId));
@@ -38,7 +38,7 @@ public class StoreController {
         return ResponseEntity.ok(storeService.getStores(pageable));
     }
 
-    // 가게 부분 수정
+    // 가게 수정
     @PatchMapping("/stores/{storeId}")
     public ResponseEntity<StoreResponseDto> updateStore(@Auth AuthUser authUser,
                                                         @PathVariable Long storeId,
@@ -49,8 +49,8 @@ public class StoreController {
     // 가게 상태 변경
     @PatchMapping("/stores/{storeId}/status")
     public ResponseEntity<StoreStatusUpdateDto> updateStoreStatus(@Auth AuthUser authUser,
-                                                              @PathVariable Long storeId,
-                                                              @RequestBody StoreStatusUpdateDto statusUpdateDto) {
+                                                                  @PathVariable Long storeId,
+                                                                  @RequestBody StoreStatusUpdateDto statusUpdateDto) {
         return ResponseEntity.ok(storeService.updateStoreStatus(authUser, storeId, statusUpdateDto.isStoreStatus()));
     }
 }

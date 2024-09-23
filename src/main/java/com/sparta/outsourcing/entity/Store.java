@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.outsourcing.dto.store.StoreRequestDto;
 import com.sparta.outsourcing.dto.store.StoreUpdateRequestDto;
 import jakarta.persistence.*;
@@ -51,6 +52,7 @@ public class Store {
         this.openTime = requestDto.getOpenTime();
         this.closeTime = requestDto.getCloseTime();
         this.storeStatus = requestDto.isStoreStatus();
+        this.menus = new ArrayList<>(); // menus 초기화
     }
 
     public void update(Customer customer, StoreUpdateRequestDto requestDto) {
@@ -58,10 +60,8 @@ public class Store {
         if (requestDto.getStoreName() != null) this.storeName = requestDto.getStoreName();
         if (requestDto.getOpenTime() != null) this.openTime = requestDto.getOpenTime();
         if (requestDto.getCloseTime() != null) this.closeTime = requestDto.getCloseTime();
-        if (requestDto.getMinPrice() > 0) {
-            // 최소 가격이 0보다 큰 경우만 업데이트
-            this.minPrice = requestDto.getMinPrice();
-        }
+        // 최소 가격이 0보다 큰 경우만 업데이트
+        if (requestDto.getMinPrice() > 0) this.minPrice = requestDto.getMinPrice();
     }
 
     public void closeStore() {

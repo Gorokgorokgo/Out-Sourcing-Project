@@ -4,41 +4,41 @@ import com.sparta.outsourcing.annotation.Auth;
 import com.sparta.outsourcing.dto.customer.AuthUser;
 import com.sparta.outsourcing.dto.menu.MenuRequestDto;
 import com.sparta.outsourcing.dto.menu.MenuResponseDto;
+import com.sparta.outsourcing.dto.menu.MenuStatusUpdateDto;
+import com.sparta.outsourcing.dto.menu.MenuUpdateDto;
 import com.sparta.outsourcing.service.MenuService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class MenuController {
 
-    private MenuService menuService;
+    private final MenuService menuService;
 
-    @PostMapping("/menus")
-    public ResponseEntity<String> create(@PathVariable Long storeId, @RequestBody MenuRequestDto requestDto) {
-        menuService.create(storeId, requestDto);
-        return ResponseEntity.ok().body("메뉴가 생성되었습니다.");
+    // 메뉴 생성
+    @PostMapping("/stores/{storeId}/menus")
+    public ResponseEntity<MenuResponseDto> createMenu(@Auth AuthUser authUser, @PathVariable Long storeId, @RequestBody MenuRequestDto requestDto) {
+        return ResponseEntity.ok(menuService.createMenu(authUser, storeId, requestDto));
     }
 
-    @GetMapping("/menus")
-    public ResponseEntity<List<MenuResponseDto>> getMenus(@PathVariable Long storeId) {
-        return ResponseEntity.ok(menuService.getMenus(storeId));
+    // 메뉴 수정
+    @PatchMapping("/stores/{storeId}/menus/{menuId}")
+    public ResponseEntity<MenuResponseDto> updateMenu(@Auth AuthUser authUser,
+                                                    @PathVariable Long storeId,
+                                                    @PathVariable Long menuId,
+                                                    @RequestBody MenuUpdateDto requestDto) {
+        return ResponseEntity.ok(menuService.updateMenu(authUser, storeId, menuId, requestDto));
     }
 
-    @PutMapping("/menus/{menuId}")
-    public ResponseEntity<String> update(@PathVariable Long menuId, @RequestBody MenuRequestDto requestDto) {
-        menuService.update(menuId, requestDto);
-        return ResponseEntity.ok().body("메뉴가 수정되었습니다.");
-    }
-
-    @DeleteMapping("/menus/{menuId}")
-    public ResponseEntity<String> delete(@PathVariable Long menuId) {
-        menuService.delete(menuId);
-        return ResponseEntity.ok().body("메뉴가 삭제되었습니다.");
+    // 메뉴 상태 변경
+    @PutMapping("/stores/{storeId}/menus/{menuId}/status")
+    public ResponseEntity<MenuStatusUpdateDto> updateMenuStatus(@Auth AuthUser authUser,
+                                         @PathVariable Long storeId,
+                                         @PathVariable Long menuId,
+                                         @RequestBody MenuStatusUpdateDto statusUpdateDto) {
+        return ResponseEntity.ok(menuService.updateMenuStatus(authUser, storeId, menuId, statusUpdateDto));
     }
 }

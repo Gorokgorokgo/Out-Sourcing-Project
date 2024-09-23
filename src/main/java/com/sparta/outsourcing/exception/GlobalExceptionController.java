@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.exception;
 
+import com.sparta.outsourcing.exception.common.UnauthorizedAccessException;
 import com.sparta.outsourcing.exception.customer.*;
 import com.sparta.outsourcing.exception.store.*;
 import org.springframework.http.HttpStatus;
@@ -76,41 +77,6 @@ public class GlobalExceptionController {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(HttpStatus.CONFLICT + " : " + ex.getMessage());
     }
 
-    // ==== store ====
-    // 사장님을 찾을 수 없는 예외 처리
-    @ExceptionHandler(CustomerNotFoundException.class)
-    public ResponseEntity<String> handleCustomerNotFoundException(CustomerNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(HttpStatus.NOT_FOUND + " : " + ex.getMessage());
-    }
-
-    // 가게를 찾을 수 없는 예외 처리
-    @ExceptionHandler(StoreNotFoundException.class)
-    public ResponseEntity<String> handleStoreNotFoundException(StoreNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(HttpStatus.NOT_FOUND + " : " + ex.getMessage());
-    }
-
-    // 권한이 없는 접근에 대한 예외 처리
-    @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<String> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(HttpStatus.FORBIDDEN + " : " + ex.getMessage());
-    }
-
-    // 가게 개수 제한 초과 예외 처리
-    @ExceptionHandler(MaxStoreLimitReachedException.class)
-    public ResponseEntity<String> handleMaxStoreLimitReachedException(MaxStoreLimitReachedException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(HttpStatus.BAD_REQUEST + " : " + ex.getMessage());
-    }
-
-    // 폐업 상태의 가게에 대한 조회 불가능 예외 처리
-    @ExceptionHandler(StoreClosedException.class)
-    public ResponseEntity<String> handleStoreClosedException(StoreClosedException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(HttpStatus.BAD_REQUEST + " : " + ex.getMessage());
-    }
 
 
 }
