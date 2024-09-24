@@ -45,7 +45,9 @@ public class ReviewService {
         Store store = findStoreById(requestDto.getStoreId());
         Review review = new Review(customer, store, requestDto);
         Review saveReview = reviewRepository.save(review);
-        fileService.uploadFiles(saveReview.getId(), files, ImageEnum.REVIEW);
+        if (files != null && !files.isEmpty()) {
+            fileService.uploadFiles(saveReview.getId(), files, ImageEnum.REVIEW);
+        }
         List<Image> image = findByItemIdAndImageEnum(saveReview.getId());
         return new ReviewResponseDto(saveReview, image);
     }
@@ -70,16 +72,16 @@ public class ReviewService {
             throw new DifferentUsersException("작성자가 아니므로 수정이 불가능합니다.");
 
         List<Image> savedImage = findByItemIdAndImageEnum(reviewId);
-        if (!files.isEmpty()) {
+        if (files != null && !files.isEmpty()) {
             int imageCount = savedImage.size() + files.size();
             System.out.println("imageCount = " + imageCount);
             if (imageCount > 3) {
                 throw new ImageUploadLimitExceededException("이미지는 최대 3개까지 업로드 가능합니다.");
             }
             fileService.uploadFiles(reviewId, files, ImageEnum.REVIEW);
-            review.update(requestDto);
         }
-        return new ReviewResponseDto(review, savedImage);
+        review.update(requestDto);
+        return new ReviewResponseDto(review, findByItemIdAndImageEnum(reviewId));
     }
 
     @Transactional
