@@ -62,7 +62,7 @@ public class MenuService {
 
     // 메뉴 수정
     @Transactional
-    public MenuResponseDto updateMenu(AuthUser authUser, Long storeId, Long menuId, MenuUpdateDto requestDto) {
+    public MenuResponseDto updateMenu(AuthUser authUser, Long storeId, Long menuId, MenuUpdateDto requestDto, List<MultipartFile> files) throws IOException {
         Customer findCustomer = getFindCustomer(authUser);  // 사용자 확인
         Store findStore = getFindStore(storeId);    // 수정 할 가게 있는지 확인
         Menu findMenu = getFindMenu(menuId);    // 수정 할 메뉴 확인
@@ -70,8 +70,17 @@ public class MenuService {
         checkAdminAuthority(authUser);  // ADMIN 권한 확인
         checkStoreOwnership(authUser, findStore);  // 본인 가게인지 확인
 
+        if (files != null && !files.isEmpty()) {
+            if (files.size() > 1)
+                throw new ImageUploadLimitExceededException("파일은 1개만 업로드 가능합니다.");
+            fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.MENU).forEach(fileRepository::delete);
+            fileService.uploadFiles(findStore.getStoreId(), files, ImageEnum.MENU);
+        }
+
         findMenu.update(findCustomer, findStore, requestDto);
-        return new MenuResponseDto(findMenu);
+        MenuResponseDto menuResponseDto = new MenuResponseDto(findMenu);
+        menuResponseDto.setImage(fileRepository.findByItemIdAndImageEnum(findMenu.getMenuId(), ImageEnum.MENU));
+        return menuResponseDto;
     }
 
     // 메뉴 상태 변경
