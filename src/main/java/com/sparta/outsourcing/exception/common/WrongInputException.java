@@ -1,4 +1,4 @@
-package com.sparta.outsourcing.exception;
+package com.sparta.outsourcing.exception.common;
 
 public class WrongInputException extends RuntimeException {
     public WrongInputException(String message) {

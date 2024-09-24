@@ -5,9 +5,9 @@ import com.sparta.outsourcing.dto.review.ReviewResponseDto;
 import com.sparta.outsourcing.dto.review.ReviewSimpleResponseDto;
 import com.sparta.outsourcing.dto.review.ReviewUpdateRequestDto;
 import com.sparta.outsourcing.entity.*;
-import com.sparta.outsourcing.exception.DifferentUsersException;
-import com.sparta.outsourcing.exception.ImageUploadLimitExceededException;
-import com.sparta.outsourcing.exception.NotFoundException;
+import com.sparta.outsourcing.exception.customer.DifferentUsersException;
+import com.sparta.outsourcing.exception.file.ImageUploadLimitExceededException;
+import com.sparta.outsourcing.exception.common.NotFoundException;
 import com.sparta.outsourcing.repository.FileRepository;
 import com.sparta.outsourcing.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,10 @@ public class ReviewService {
         Store store = commonService.findStoreById(requestDto.getStoreId());
         Review review = new Review(customer, store, requestDto);
         Review saveReview = reviewRepository.save(review);
-        fileService.uploadFiles(saveReview.getReviewId(), files, ImageEnum.REVIEW);
+
+        if (files != null && !files.isEmpty()) {
+            fileService.uploadFiles(saveReview.getReviewId(), files, ImageEnum.REVIEW);
+        }
         List<Image> image = findByItemIdAndImageEnum(saveReview.getReviewId());
         return new ReviewResponseDto(saveReview, image);
     }
@@ -64,7 +67,7 @@ public class ReviewService {
             throw new DifferentUsersException("작성자가 아니므로 수정이 불가능합니다.");
 
         List<Image> savedImage = findByItemIdAndImageEnum(reviewId);
-        if (!files.isEmpty()) {
+        if (files != null && !files.isEmpty()) {
             int imageCount = savedImage.size() + files.size();
             System.out.println("imageCount = " + imageCount);
             if (imageCount > 3) {
@@ -73,7 +76,7 @@ public class ReviewService {
             fileService.uploadFiles(reviewId, files, ImageEnum.REVIEW);
         }
         review.update(requestDto);
-        return new ReviewResponseDto(review, savedImage);
+        return new ReviewResponseDto(review, findByItemIdAndImageEnum(reviewId));
     }
 
     @Transactional

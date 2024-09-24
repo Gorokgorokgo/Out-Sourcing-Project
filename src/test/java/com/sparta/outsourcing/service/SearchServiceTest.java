@@ -3,7 +3,7 @@ package com.sparta.outsourcing.service;
 import com.sparta.outsourcing.dto.search.SearchAllResponseDto;
 import com.sparta.outsourcing.entity.Menu;
 import com.sparta.outsourcing.entity.Store;
-import com.sparta.outsourcing.exception.WrongInputException;
+import com.sparta.outsourcing.exception.common.WrongInputException;
 import com.sparta.outsourcing.repository.MenuRepository;
 import com.sparta.outsourcing.repository.SearchRepository;
 import com.sparta.outsourcing.repository.StoreRepository;

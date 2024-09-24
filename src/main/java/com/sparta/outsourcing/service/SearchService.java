@@ -11,7 +11,7 @@ import com.sparta.outsourcing.entity.Customer;
 import com.sparta.outsourcing.entity.Menu;
 import com.sparta.outsourcing.entity.Search;
 import com.sparta.outsourcing.entity.Store;
-import com.sparta.outsourcing.exception.WrongInputException;
+import com.sparta.outsourcing.exception.common.WrongInputException;
 import com.sparta.outsourcing.repository.MenuRepository;
 import com.sparta.outsourcing.repository.SearchRepository;
 import com.sparta.outsourcing.repository.StoreRepository;

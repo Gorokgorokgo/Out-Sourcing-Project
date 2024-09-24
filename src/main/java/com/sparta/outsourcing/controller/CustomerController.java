@@ -2,8 +2,8 @@ package com.sparta.outsourcing.controller;
 
 import com.sparta.outsourcing.annotation.Auth;
 import com.sparta.outsourcing.dto.customer.*;
-import com.sparta.outsourcing.exception.DifferentUsersException;
-import com.sparta.outsourcing.exception.WithdrawnMemberException;
+import com.sparta.outsourcing.exception.customer.DifferentUsersException;
+import com.sparta.outsourcing.exception.customer.WithdrawnMemberException;
 import com.sparta.outsourcing.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

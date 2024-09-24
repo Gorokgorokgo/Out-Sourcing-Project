@@ -2,7 +2,7 @@ package com.sparta.outsourcing.service;
 
 import com.sparta.outsourcing.entity.Customer;
 import com.sparta.outsourcing.entity.Store;
-import com.sparta.outsourcing.exception.NotFoundException;
+import com.sparta.outsourcing.exception.common.NotFoundException;
 import com.sparta.outsourcing.repository.CustomerRepository;
 import com.sparta.outsourcing.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
