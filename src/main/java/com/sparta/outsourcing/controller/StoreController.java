@@ -12,6 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +26,10 @@ public class StoreController {
 
     // 가게 생성
     @PostMapping("/stores")
-    public ResponseEntity<StoreResponseDto> createStore(@Auth AuthUser authUser, @RequestBody StoreRequestDto requestDto) {
-        return ResponseEntity.ok(storeService.createStore(authUser, requestDto));
+    public ResponseEntity<StoreResponseDto> createStore(@Auth AuthUser authUser,
+                                                        @RequestPart StoreRequestDto requestDto,
+                                                        @RequestPart(value = "file", required = false) List<MultipartFile> file) throws IOException {
+        return ResponseEntity.ok(storeService.createStore(authUser, requestDto, file));
     }
 
     // 가게 단건 조회 + 메뉴 조회
@@ -39,11 +45,12 @@ public class StoreController {
     }
 
     // 가게 수정
-    @PatchMapping("/stores/{storeId}")
+    @PutMapping("/stores/{storeId}")
     public ResponseEntity<StoreResponseDto> updateStore(@Auth AuthUser authUser,
                                                         @PathVariable Long storeId,
-                                                        @RequestBody StoreUpdateRequestDto requestDto) {
-        return ResponseEntity.ok(storeService.updateStore(authUser, storeId, requestDto));
+                                                        @RequestPart(required = false) StoreUpdateRequestDto requestDto,
+                                                        @RequestPart(value = "file", required = false) List<MultipartFile> file) throws IOException {
+        return ResponseEntity.ok(storeService.updateStore(authUser, storeId, requestDto, file));
     }
 
     // 가게 상태 변경

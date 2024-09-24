@@ -3,14 +3,18 @@ package com.sparta.outsourcing.service;
 import com.sparta.outsourcing.constant.MenuStatus;
 import com.sparta.outsourcing.constant.UserRoleEnum;
 import com.sparta.outsourcing.dto.customer.AuthUser;
+import com.sparta.outsourcing.repository.FileRepository;
 import com.sparta.outsourcing.dto.store.StoreRequestDto;
 import com.sparta.outsourcing.dto.store.StoreResponseDto;
 import com.sparta.outsourcing.dto.store.StoreStatusUpdateDto;
 import com.sparta.outsourcing.dto.store.StoreUpdateRequestDto;
 import com.sparta.outsourcing.entity.Customer;
+import com.sparta.outsourcing.entity.Image;
+import com.sparta.outsourcing.entity.ImageEnum;
 import com.sparta.outsourcing.entity.Store;
 import com.sparta.outsourcing.exception.common.UnauthorizedAccessException;
 import com.sparta.outsourcing.exception.customer.CustomerNotFoundException;
+import com.sparta.outsourcing.exception.file.ImageUploadLimitExceededException;
 import com.sparta.outsourcing.exception.store.MaxStoreLimitReachedException;
 import com.sparta.outsourcing.exception.store.StoreNotFoundException;
 import com.sparta.outsourcing.repository.CustomerRepository;
@@ -20,9 +24,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,17 +39,30 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final CustomerRepository customerRepository;
+    private final FileService fileService;
+    private final FileRepository fileRepository;
 
     // 가게 생성
     @Transactional
-    public StoreResponseDto createStore(AuthUser authUser, StoreRequestDto requestDto) {
+    public StoreResponseDto createStore(AuthUser authUser, StoreRequestDto requestDto, List<MultipartFile> files) throws IOException {
         Customer findCustomer = getFindCustomer(authUser);  // 사용자 확인
 
         checkAdminAuthority(authUser); // ADMIN 인지 확인
         checkStoreLimit(authUser);  // 가게 수 확인
 
         Store newStore = storeRepository.save(new Store(findCustomer, requestDto));
-        return new StoreResponseDto(newStore);
+
+
+        if (files != null && !files.isEmpty()) {
+            if (files.size() > 1)
+                throw new ImageUploadLimitExceededException("파일은 1개만 업로드 가능합니다.");
+            fileService.uploadFiles(newStore.getStoreId(), files, ImageEnum.STORE);
+        }
+
+        List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(newStore.getStoreId(), ImageEnum.STORE);
+        StoreResponseDto storeResponseDto = new StoreResponseDto(newStore);
+        storeResponseDto.setImage(byItemIdAndImageEnum);
+        return storeResponseDto;
     }
 
     // 가게 단건 조회
@@ -50,10 +70,12 @@ public class StoreService {
         List<MenuStatus> statuses = Arrays.asList(MenuStatus.ACTIVE, MenuStatus.OUT_OF_STOCK);
         Store findStore = getStore(storeId, statuses);  // 상태 만족하는 가게 & 메뉴 조회
 
+        List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.STORE);
         StoreResponseDto storeResponseDto = new StoreResponseDto(findStore);
+        storeResponseDto.setImage(byItemIdAndImageEnum);
         storeResponseDto.setMenus(findStore.getMenus().stream()
-                    .filter(menu -> statuses.contains(menu.getMenuStatus()))
-                    .collect(Collectors.toList()));
+                .filter(menu -> statuses.contains(menu.getMenuStatus()))
+                .collect(Collectors.toList()));
 
         return storeResponseDto;
     }
@@ -61,21 +83,40 @@ public class StoreService {
     // 가게 다건 조회
     @Transactional
     public Page<StoreResponseDto> getStores(Pageable pageable) {
-        Page<Store> stores = storeRepository.findAllByStoreStatus(true, pageable);  // 개업상태 가게목록 조회
-        return stores.map(StoreResponseDto::new);
+        Page<Store> stores = storeRepository.findAllByStoreStatus(true, pageable);  // 개업 상태 가게 목록 조회
+        return stores.map(store -> {
+            List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(store.getStoreId(), ImageEnum.STORE);
+            StoreResponseDto storeResponseDto = new StoreResponseDto(store);
+            storeResponseDto.setImage(byItemIdAndImageEnum);
+            return storeResponseDto;
+        });
     }
+
 
     // 가게 수정
     @Transactional
-    public StoreResponseDto updateStore(AuthUser authUser, Long storeId, StoreUpdateRequestDto requestDto) {
+    public StoreResponseDto updateStore(AuthUser authUser, Long storeId, StoreUpdateRequestDto requestDto, List<MultipartFile> file) throws IOException {
         Customer findCustomer = getFindCustomer(authUser);  // 사용자 확인
         Store findStore = getFindStore(storeId);    // 수정할 가게 확인
 
         checkAdminAuthority(authUser); // ADMIN 인지 확인
         checkStoreOwnership(authUser, findStore);  // 본인 가게인지 확인
 
+
+        if (file != null && !file.isEmpty()) {
+            if (file.size() > 1)
+                throw new ImageUploadLimitExceededException("파일은 1개만 업로드 가능합니다.");
+            fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.STORE).forEach(fileRepository::delete);
+            fileService.uploadFiles(findStore.getStoreId(), file, ImageEnum.STORE);
+        }
         findStore.update(findCustomer, requestDto);
-        return new StoreResponseDto(findStore);
+
+        StoreResponseDto storeResponseDto = new StoreResponseDto(findStore);
+        storeResponseDto.setImage(fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.STORE));
+
+
+
+        return storeResponseDto;
     }
 
     // 가게 상태 변경
@@ -87,6 +128,7 @@ public class StoreService {
         checkStoreOwnership(authUser, findStore);  // 본인 가게인지 확인
 
         // storeStatus 값에 따라 가게 상태를 개업(true) 또는 폐업(false)으로 변경
+
         if (storeStatus) {
             findStore.openStore();
         } else {
@@ -106,7 +148,7 @@ public class StoreService {
     }
 
     private void checkAdminAuthority(AuthUser authUser) {
-        if(!authUser.getRole().getAuthority().equals(UserRoleEnum.ADMIN.getAuthority())) {
+        if (!authUser.getRole().getAuthority().equals(UserRoleEnum.OWNER.getAuthority())) {
             throw new UnauthorizedAccessException("사장님만 가능합니다.");
         }
     }

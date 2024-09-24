@@ -87,9 +87,7 @@ public class ReviewService {
             throw new DifferentUsersException("작성자가 아니므로 삭제가 불가능합니다.");
         reviewRepository.deleteById(reviewId);
         List<Image> byItemIdAndImageEnum = findByItemIdAndImageEnum(reviewId);
-        for (Image image : byItemIdAndImageEnum) {
-            fileRepository.delete(image);
-        }
+        fileRepository.deleteAll(byItemIdAndImageEnum);
     }
 
 
