@@ -1,13 +1,15 @@
 package com.sparta.outsourcing.service;
 
 import com.sparta.outsourcing.config.PasswordEncoder;
+import com.sparta.outsourcing.constant.UserRoleEnum;
 import com.sparta.outsourcing.dto.customer.CustomerRequestDto;
 import com.sparta.outsourcing.dto.customer.CustomerResponseDto;
 import com.sparta.outsourcing.dto.customer.CustomerUpdateRequestDto;
 import com.sparta.outsourcing.dto.customer.LoginRequestDto;
 import com.sparta.outsourcing.entity.Customer;
-import com.sparta.outsourcing.entity.UserRoleEnum;
 import com.sparta.outsourcing.exception.*;
+import com.sparta.outsourcing.exception.customer.DifferentUsersException;
+import com.sparta.outsourcing.exception.customer.InvalidAdminTokenException;
 import com.sparta.outsourcing.jwt.JwtUtil;
 import com.sparta.outsourcing.repository.CustomerRepository;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
@@ -25,11 +26,11 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 @MockBean(JpaMetamodelMappingContext.class)
 @ExtendWith(MockitoExtension.class)

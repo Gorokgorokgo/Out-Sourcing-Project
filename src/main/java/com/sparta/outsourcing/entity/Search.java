@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.entity;
 
+import com.sparta.outsourcing.dto.search.SearchRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ public class Search extends Timestamped2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="search_id")
-    private Long id;
+    private Long searchId;
 
     @Column(nullable = false)
     private String keyword;
@@ -22,6 +23,8 @@ public class Search extends Timestamped2 {
     private Customer customer;
 
 
-
-
+    public Search(Customer customer, SearchRequestDto requestDto) {
+        this.customer = customer;
+        this.keyword = requestDto.getKeyword();
+    }
 }

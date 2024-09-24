@@ -19,7 +19,7 @@ public class ReviewSimpleResponseDto {
 
 
     public ReviewSimpleResponseDto(Review review, List<Image> images) {
-        this.reviewId = review.getId();
+        this.reviewId = review.getReviewId();
         this.star = review.getStar();
         this.content = review.getContent();
         this.createdAt = review.getCreatedAt();

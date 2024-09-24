@@ -5,7 +5,7 @@ import com.sparta.outsourcing.dto.order.OrderMenuDto;
 import com.sparta.outsourcing.dto.order.OrderRequestDto;
 import com.sparta.outsourcing.dto.order.OrderResponseDto;
 import com.sparta.outsourcing.entity.*;
-import com.sparta.outsourcing.exception.OrderNotFoundException;
+import com.sparta.outsourcing.exception.order.OrderNotFoundException;
 import com.sparta.outsourcing.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
