@@ -15,6 +15,7 @@ public class StoreResponseDto {
     private String storeName;
     private int minPrice;
     private boolean storeStatus;
+    private String address;
     private List<MenuResponseDto> menus;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
@@ -30,10 +31,13 @@ public class StoreResponseDto {
         this.storeStatus = store.isStoreStatus();
         this.openTime = store.getOpenTime();
         this.closeTime = store.getCloseTime();
+        this.address = store.getAddress();
+//        this.menus = store.getMenus();
         this.menus = store.getMenus().stream().map(menu -> new MenuResponseDto(menu)).toList();
     }
 
     public void setMenus(List<Menu> menus) {
+//        this.menus = menus;
         this.menus = menus.stream().map(menu -> new MenuResponseDto(menu)).toList();
     }
 
