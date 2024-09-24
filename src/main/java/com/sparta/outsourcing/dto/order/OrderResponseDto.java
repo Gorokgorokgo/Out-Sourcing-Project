@@ -35,4 +35,8 @@ public class OrderResponseDto {
     this.storeName = storeName;
     this.orderList = new ArrayList<>();
   }
+
+  public OrderResponseDto(String message) {
+    this.message = message;
+  }
 }

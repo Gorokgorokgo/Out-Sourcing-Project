@@ -29,22 +29,22 @@ public class OrderController {
 
   // 주문내역 조회
   @GetMapping("/{orderId}")
-  public ResponseEntity<OrderResponseDto> getOrder(@PathVariable Long orderId) {
-    OrderResponseDto response = orderService.getOrder(orderId);
+  public ResponseEntity<OrderResponseDto> getOrder(@Auth AuthUser authUser, @PathVariable Long orderId) {
+    OrderResponseDto response = orderService.getOrder(authUser, orderId);
     return ResponseEntity.ok(response);
   }
 
   // 주문내역 수정
   @PutMapping("/modify/{orderId}")  // @PathVariable 추가
-  public ResponseEntity<OrderResponseDto> modifyOrder(@PathVariable Long orderId, @RequestBody OrderRequestDto orderRequestDto) {
-    OrderResponseDto response = orderService.modifyOrder(orderId, orderRequestDto);
+  public ResponseEntity<OrderResponseDto> modifyOrder(@Auth AuthUser authUser, @RequestBody OrderRequestDto orderRequestDto, @PathVariable Long orderId) {
+    OrderResponseDto response = orderService.modifyOrder(authUser, orderId, orderRequestDto);
     return ResponseEntity.ok(response);
   }
 
   // 주문내역 삭제
   @DeleteMapping("/{orderId}")
-  public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
-    orderService.deleteOrder(orderId);
+  public ResponseEntity<String> deleteOrder(@Auth AuthUser authUser, @PathVariable Long orderId) {
+    orderService.deleteOrder(authUser, orderId);
     return ResponseEntity.ok("주문이 삭제되었습니다.");
   }
 }

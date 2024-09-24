@@ -20,7 +20,7 @@ public class ReviewResponseDto {
     private List<Image> images = new ArrayList<>();
 
     public ReviewResponseDto(Review saveReview) {
-        this.reviewId = saveReview.getId();
+        this.reviewId = saveReview.getReviewId();
         this.customerId = saveReview.getCustomer().getCustomerId();
         this.storeId = saveReview.getStore().getStoreId();
         this.star = saveReview.getStar();
@@ -30,7 +30,7 @@ public class ReviewResponseDto {
     }
 
     public ReviewResponseDto(Review saveReview, List<Image> images) {
-        this.reviewId = saveReview.getId();
+        this.reviewId = saveReview.getReviewId();
         this.customerId = saveReview.getCustomer().getCustomerId();
         this.storeId = saveReview.getStore().getStoreId();
         this.star = saveReview.getStar();
