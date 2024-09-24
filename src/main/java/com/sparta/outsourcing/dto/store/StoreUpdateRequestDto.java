@@ -14,6 +14,9 @@ public class StoreUpdateRequestDto {
     private int minPrice;
 
     @JsonProperty(required = false)
+    private int address;
+
+    @JsonProperty(required = false)
     private LocalTime openTime;
 
     @JsonProperty(required = false)
