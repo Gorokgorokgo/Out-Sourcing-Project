@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -62,6 +65,26 @@ public class OrderService {
         orderRequestDto.getOrderList());
   }
 
+  // 주문내역 조회
+  public OrderResponseDto getOrder(Long orderId) {
+    Order order = orderRepository.findById(orderId).orElseThrow(
+        () -> new IllegalArgumentException("주문내역을 찾을 수 없습니다."));
+    List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
+        .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
+        .collect(Collectors.toList());
+
+    return new OrderResponseDto("주문내역 입니다.",
+        order.getStore().getStoreName(),
+        orderId,
+        order.getOrderStatus().name(),
+        order.getTotalPrice(),
+        order.getDeliveryAddress(),
+        orderMenus);
+  }
+
+
+///////////////////////////////////////////////////////////////////////////////
+
   private void clearCart(Long customerId) {
     Cart cart = cartRepository.findByCustomer_CustomerId(customerId).orElseThrow(
         () -> new IllegalArgumentException("장바구니를 찾지 못했습니다."));
@@ -72,7 +95,6 @@ public class OrderService {
     return menuRepository.findById(menuId)
         .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다."));
   }
-
 }
 
 
