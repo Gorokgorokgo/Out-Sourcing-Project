@@ -1,10 +1,11 @@
 package com.sparta.outsourcing.service;
 
-import com.sparta.outsourcing.dto.SearchResponseDto;
+import com.sparta.outsourcing.dto.search.SearchAllResponseDto;
 import com.sparta.outsourcing.dto.store.StoreDetailResponseDto;
 import com.sparta.outsourcing.dto.store.StoreResponseDto;
 import com.sparta.outsourcing.entity.Menu;
 import com.sparta.outsourcing.entity.Store;
+import com.sparta.outsourcing.exception.WrongInputException;
 import com.sparta.outsourcing.repository.MenuRepository;
 import com.sparta.outsourcing.repository.SearchRepository;
 import com.sparta.outsourcing.repository.StoreRepository;
@@ -29,7 +30,10 @@ public class SearchService {
     //빽다 -> 메뉴중에 빽다가 들어간 메뉴가 검색되도록
     //공차리얼
 
-    public SearchResponseDto searchAll(String keyword, String address) {
+    public SearchAllResponseDto searchAll(String keyword, String address) {
+
+        if(keyword == null) throw new WrongInputException("keyword가 입력되지 않았습니다.");
+        if(address == null || address.split(" ").length < 3) throw new WrongInputException("address를 다시 입력해주세요.");
         //가게 검색 결과
         List<StoreResponseDto> storeResult = new ArrayList<>();
         //메뉴 검색 결과
@@ -83,7 +87,7 @@ public class SearchService {
                 storeMenuList = menuGuList.stream().map(m->m.getStore()).toList();
                 menuListAdd(menuResult, storeMenuList, menuGuList);
             }
-            return new SearchResponseDto(storeResult, menuResult);
+            return new SearchAllResponseDto(storeResult, menuResult);
         }
         //처음 검색 결과가 15개보다 적으면 모두 결과물로 변환
         storeMenuList = menuList.stream().map(m->m.getStore()).toList();
@@ -91,7 +95,7 @@ public class SearchService {
             menuResult.add(new StoreDetailResponseDto(menuList.get(i), storeMenuList.get(i)));
         }
         //가게와 메뉴 검색 결과를 하나로 만들어 responseDto로 최종 전달
-        return new SearchResponseDto(storeResult, menuResult);
+        return new SearchAllResponseDto(storeResult, menuResult);
     }
 
     private void menuListAdd (List<StoreDetailResponseDto> menuResult, List<Store> storeMenuList, List<Menu> menuList) {
