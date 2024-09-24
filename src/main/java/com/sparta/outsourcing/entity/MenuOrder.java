@@ -1,26 +1,33 @@
 package com.sparta.outsourcing.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "menus_orders")
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "menus_orders")
 public class MenuOrder {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long menuOrderId;
+  private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(nullable = false, name = "menu_id")
+  @JoinColumn(name = "order_id")
+  private Order order;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "menu_id")
   private Menu menu;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(nullable = false, name = "order_id")
-  private Order order;
+  @Column(nullable = false)
+  private Long quantity;
+
+  public MenuOrder(Order order, Menu menu, Long quantity) {
+    this.order = order;
+    this.menu = menu;
+    this.quantity = quantity;
+  }
 }

@@ -51,7 +51,7 @@ public class Order {
 
   // Order와 Menu의 중간 테이블 관계 추가
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<OrderMenu> orderMenus;  // 중간 테이블 엔티티
+  private List<MenuOrder> menuOrders;  // 중간 테이블 엔티티
 
   public Order(Customer customer, Store store, String deliveryAddress, String request) {
     this.customer = customer;
