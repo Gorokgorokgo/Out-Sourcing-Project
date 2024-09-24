@@ -5,6 +5,7 @@ import com.sparta.outsourcing.dto.order.OrderMenuDto;
 import com.sparta.outsourcing.dto.order.OrderRequestDto;
 import com.sparta.outsourcing.dto.order.OrderResponseDto;
 import com.sparta.outsourcing.entity.*;
+import com.sparta.outsourcing.exception.OrderNotFoundException;
 import com.sparta.outsourcing.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,8 +63,8 @@ public class OrderService {
 
   // 주문내역 조회
   public OrderResponseDto getOrder(Long orderId) {
-    Order order = orderRepository.findById(orderId).orElseThrow(
-        () -> new IllegalArgumentException("주문내역을 찾을 수 없습니다."));
+    Order order = findById(orderId);
+
     List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
         .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
         .toList();
@@ -82,8 +83,7 @@ public class OrderService {
   // 주문내역 수정
   public OrderResponseDto modifyOrder(Long orderId, OrderRequestDto orderRequestDto) {
 
-    Order order = orderRepository.findById(orderId).orElseThrow(
-        () -> new IllegalArgumentException("주문내역을 찾을 수 없습니다."));
+    Order order = findById(orderId);
 
     Order updatedOrder = new Order(
         order.getCustomer(),
@@ -108,8 +108,15 @@ public class OrderService {
         orderMenus);
   }
 
+  public void deleteOrder(Long orderId) {
+    Order order = findById(orderId);
+
+    orderRepository.delete(order);
+  }
+
 
 ///////////////////////////////////////////////////////////////////////////////
+
 
   private void clearCart(Long customerId) {
     Cart cart = cartRepository.findByCustomer_CustomerId(customerId).orElseThrow(
@@ -130,6 +137,11 @@ public class OrderService {
       totalPrice += menu.getMenuPrice() * orderMenuDto.getQuantity();
     }
     return totalPrice;
+  }
+
+  private Order findById(Long orderId) {
+    return orderRepository.findById(orderId).orElseThrow(
+        () -> new OrderNotFoundException("주문내역을 찾을 수 없습니다."));
   }
 }
 

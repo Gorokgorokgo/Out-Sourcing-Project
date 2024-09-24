@@ -1,17 +1,15 @@
 package com.sparta.outsourcing.controller;
 
 import com.sparta.outsourcing.annotation.Auth;
-import com.sparta.outsourcing.dto.order.OrderResponseDto;
 import com.sparta.outsourcing.dto.customer.AuthUser;
 import com.sparta.outsourcing.dto.order.OrderRequestDto;
+import com.sparta.outsourcing.dto.order.OrderResponseDto;
 import com.sparta.outsourcing.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,4 +41,10 @@ public class OrderController {
     return ResponseEntity.ok(response);
   }
 
+  // 주문내역 삭제
+  @DeleteMapping("/{orderId}")
+  public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
+    orderService.deleteOrder(orderId);
+    return ResponseEntity.ok("주문이 삭제되었습니다.");
+  }
 }
