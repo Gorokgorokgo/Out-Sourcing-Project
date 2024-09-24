@@ -1,0 +1,78 @@
+package com.sparta.outsourcing.service;
+
+import com.sparta.outsourcing.dto.customer.AuthUser;
+import com.sparta.outsourcing.dto.order.OrderMenuDto;
+import com.sparta.outsourcing.dto.order.OrderRequestDto;
+import com.sparta.outsourcing.dto.order.OrderResponseDto;
+import com.sparta.outsourcing.entity.*;
+import com.sparta.outsourcing.repository.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+  private final OrderRepository orderRepository;
+  private final StoreRepository storeRepository;
+  private final CustomerRepository customerRepository;
+  private final MenuRepository menuRepository;
+  private final OrderMenuRepository orderMenuRepository;
+  private final CartRepository cartRepository;
+
+  @Transactional
+  public OrderResponseDto createOrder(AuthUser authUser, OrderRequestDto orderRequestDto) {
+    // 고객 조회
+    Customer customer = customerRepository.findByCustomerId(authUser.getCustomerId()).orElseThrow(
+        () -> new IllegalArgumentException("고객을 찾을 수 없습니다."));
+
+    // 가게 조회
+    Store store = storeRepository.findById(orderRequestDto.getStoreId()).orElseThrow(
+        () -> new IllegalArgumentException("가게를 찾을 수 없습니다."));
+
+    // 주문 금액 계산
+    Long totalPrice = 0L;
+    for (OrderMenuDto orderMenuDto : orderRequestDto.getOrderList()) {
+      Menu menu = findMenuById(orderMenuDto.getMenuId());
+      totalPrice += menu.getMenuPrice() * orderMenuDto.getQuantity();
+    }
+
+    // 주문 생성
+    Order order = new Order(customer, store, orderRequestDto.getDeliveryAddress(), orderRequestDto.getRequest(), totalPrice);
+    orderRepository.save(order);
+
+    // 주문 항목(메뉴) 저장
+    for (OrderMenuDto orderMenuDto : orderRequestDto.getOrderList()) {
+      Menu menu = findMenuById(orderMenuDto.getMenuId());
+      OrderMenu orderMenu = new OrderMenu(order, menu, orderMenuDto.getQuantity());
+      orderMenuRepository.save(orderMenu);  // 중간 테이블에 저장
+    }
+
+    // 주문 완료 후 장바구니 비우기
+    clearCart(customer.getCustomerId());
+
+    // Dto 생성
+    return new OrderResponseDto("주문이 완료되었습니다.",
+        store.getStoreName(),
+        order.getOrderId(),
+        order.getOrderStatus().name(),
+        totalPrice,
+        orderRequestDto.getDeliveryAddress(),
+        orderRequestDto.getOrderList());
+  }
+
+  private void clearCart(Long customerId) {
+    Cart cart = cartRepository.findByCustomer_CustomerId(customerId).orElseThrow(
+        () -> new IllegalArgumentException("장바구니를 찾지 못했습니다."));
+    cartRepository.delete(cart);
+  }
+
+  private Menu findMenuById(Long menuId) {
+    return menuRepository.findById(menuId)
+        .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다."));
+  }
+
+}
+
+

@@ -13,6 +13,7 @@ import com.sparta.outsourcing.repository.MenuCartRepository;
 import com.sparta.outsourcing.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CartService {
   private final MenuRepository menuRepository;
   private final MenuCartRepository menuCartRepository;
 
+  @Transactional
   public CartResponseDto addCart(AuthUser authUser, CartRequestDto cartRequestDto) {
     // 유저 조회
     Customer customer = customerRepository.findByEmail(authUser.getEmail())
@@ -50,6 +52,7 @@ public class CartService {
     return new CartResponseDto("장바구니에 추가되었습니다.", cartList);
   }
 
+  @Transactional
   public CartResponseDto deleteCart(AuthUser authUser, Long menuId) {
     // 유저 조회
     Customer customer = customerRepository.findByCustomerId(authUser.getCustomerId()).orElseThrow(
