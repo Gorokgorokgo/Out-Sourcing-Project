@@ -32,12 +32,10 @@ public class StoreResponseDto {
         this.openTime = store.getOpenTime();
         this.closeTime = store.getCloseTime();
         this.address = store.getAddress();
-//        this.menus = store.getMenus();
         this.menus = store.getMenus().stream().map(menu -> new MenuResponseDto(menu)).toList();
     }
 
     public void setMenus(List<Menu> menus) {
-//        this.menus = menus;
         this.menus = menus.stream().map(menu -> new MenuResponseDto(menu)).toList();
     }
 
