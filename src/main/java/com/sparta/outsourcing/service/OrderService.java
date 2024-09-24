@@ -1,7 +1,7 @@
 package com.sparta.outsourcing.service;
 
 import com.sparta.outsourcing.dto.customer.AuthUser;
-import com.sparta.outsourcing.dto.order.OrderMenuDto;
+import com.sparta.outsourcing.dto.order.MenuOrderDto;
 import com.sparta.outsourcing.dto.order.OrderRequestDto;
 import com.sparta.outsourcing.dto.order.OrderResponseDto;
 import com.sparta.outsourcing.entity.*;
@@ -22,7 +22,7 @@ public class OrderService {
   private final StoreRepository storeRepository;
   private final CustomerRepository customerRepository;
   private final MenuRepository menuRepository;
-  private final OrderMenuRepository orderMenuRepository;
+  private final MenuOrderRepository menuOrderRepository;
   private final CartRepository cartRepository;
 
   @Transactional
@@ -54,10 +54,10 @@ public class OrderService {
     orderRepository.save(order);
 
     // 주문 항목(메뉴) 저장
-    for (OrderMenuDto orderMenuDto : orderRequestDto.getOrderList()) {
-      Menu menu = findMenuById(orderMenuDto.getMenuId());
-      OrderMenu orderMenu = new OrderMenu(order, menu, orderMenuDto.getQuantity());
-      orderMenuRepository.save(orderMenu);  // 중간 테이블에 저장
+    for (MenuOrderDto menuOrderDto : orderRequestDto.getOrderList()) {
+      Menu menu = findMenuById(menuOrderDto.getMenuId());
+      MenuOrder menuOrder = new MenuOrder(order, menu, menuOrderDto.getQuantity());
+      menuOrderRepository.save(menuOrder);  // 중간 테이블에 저장
     }
 
     // 주문 완료 후 장바구니 비우기
@@ -79,8 +79,8 @@ public class OrderService {
 
     Order order = findByCustomer_CustomerIdAndOrderId(authUser, orderId);
 
-    List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
-        .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
+    List<MenuOrderDto> MenuOrders = order.getMenuOrders().stream()
+        .map(menuOrder -> new MenuOrderDto(menuOrder.getMenu().getMenuId(), menuOrder.getQuantity()))
         .toList();
 
     return new OrderResponseDto("주문내역 입니다.",
@@ -89,7 +89,7 @@ public class OrderService {
         order.getOrderStatus().name(),
         order.getTotalPrice(),
         order.getDeliveryAddress(),
-        orderMenus);
+        MenuOrders);
   }
 
 
@@ -107,8 +107,8 @@ public class OrderService {
         calculateTotalPrice(orderRequestDto.getOrderList())
     );
 
-    List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
-        .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
+    List<MenuOrderDto> MenuOrders = order.getMenuOrders().stream()
+        .map(menuOrder -> new MenuOrderDto(menuOrder.getMenu().getMenuId(), menuOrder.getQuantity()))
         .toList();
 
     orderRepository.save(updatedOrder);
@@ -119,7 +119,7 @@ public class OrderService {
         updatedOrder.getOrderStatus().name(),
         updatedOrder.getTotalPrice(),
         updatedOrder.getDeliveryAddress(),
-        orderMenus);
+        MenuOrders);
   }
 
   public void deleteOrder(AuthUser authUser, Long orderId) {
@@ -145,11 +145,11 @@ public class OrderService {
   }
 
   // 주문 금액 계산
-  private Long calculateTotalPrice(List<OrderMenuDto> orderList) {
+  private Long calculateTotalPrice(List<MenuOrderDto> orderList) {
     Long totalPrice = 0L;
-    for (OrderMenuDto orderMenuDto : orderList) {
-      Menu menu = findMenuById(orderMenuDto.getMenuId());
-      totalPrice += menu.getMenuPrice() * orderMenuDto.getQuantity();
+    for (MenuOrderDto menuOrderDto : orderList) {
+      Menu menu = findMenuById(menuOrderDto.getMenuId());
+      totalPrice += menu.getMenuPrice() * menuOrderDto.getQuantity();
     }
     return totalPrice;
   }

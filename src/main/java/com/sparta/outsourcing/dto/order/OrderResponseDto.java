@@ -1,7 +1,5 @@
 package com.sparta.outsourcing.dto.order;
 
-import com.sparta.outsourcing.entity.Order;
-import com.sparta.outsourcing.entity.OrderMenu;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -17,10 +15,10 @@ public class OrderResponseDto {
   private String orderStatus;
   private Long totalPrice;
   private String deliveryAddress;
-  private List<OrderMenuDto> orderList;
+  private List<MenuOrderDto> orderList;
 
   public OrderResponseDto(String message, String storeName, Long orderId, String orderStatus,
-                          Long totalPrice, String deliveryAddress, List<OrderMenuDto> orderList) {
+                          Long totalPrice, String deliveryAddress, List<MenuOrderDto> orderList) {
     this.message = message;
     this.storeName = storeName;
     this.orderId = orderId;

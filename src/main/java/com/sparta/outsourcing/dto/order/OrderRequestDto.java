@@ -22,5 +22,5 @@ public class OrderRequestDto {
   private String request; // 추가 요청사항
 
   @NotNull(message = "주문 항목은 필수입니다.")
-  private List<OrderMenuDto> orderList;
+  private List<MenuOrderDto> orderList;
 }
