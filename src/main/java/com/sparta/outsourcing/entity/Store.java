@@ -54,6 +54,7 @@ public class Store {
         this.openTime = requestDto.getOpenTime();
         this.closeTime = requestDto.getCloseTime();
         this.storeStatus = requestDto.isStoreStatus();
+        this.address = requestDto.getAddress();
         this.menus = new ArrayList<>(); // menus 초기화
     }
 
