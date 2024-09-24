@@ -1,9 +1,15 @@
 package com.sparta.outsourcing.service;
 
+import com.sparta.outsourcing.dto.customer.AuthUser;
 import com.sparta.outsourcing.dto.search.SearchAllResponseDto;
+import com.sparta.outsourcing.dto.search.SearchLatestResponseDto;
+import com.sparta.outsourcing.dto.search.SearchRequestDto;
+import com.sparta.outsourcing.dto.search.SearchResponsDto;
 import com.sparta.outsourcing.dto.store.StoreDetailResponseDto;
 import com.sparta.outsourcing.dto.store.StoreResponseDto;
+import com.sparta.outsourcing.entity.Customer;
 import com.sparta.outsourcing.entity.Menu;
+import com.sparta.outsourcing.entity.Search;
 import com.sparta.outsourcing.entity.Store;
 import com.sparta.outsourcing.exception.WrongInputException;
 import com.sparta.outsourcing.repository.MenuRepository;
@@ -26,6 +32,7 @@ public class SearchService {
     private final SearchRepository searchRepository;
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
+    private final CommonService commonService;
     //공차 -> 공차 쌍문역점, 공차 수유역점 공차리얼
     //빽다 -> 메뉴중에 빽다가 들어간 메뉴가 검색되도록
     //공차리얼
@@ -76,7 +83,7 @@ public class SearchService {
         //검색 결과가 15개 넘으면 가게가 동에 있는걸로 한정
         if(menuList.size() > 4) {
             List<Menu> menuDongList = menuList.stream().filter(menu -> menu.getStore().getAddress().contains(addressDong)).toList();
-            storeMenuList= menuDongList.stream().map(menu -> menu.getStore()).toList();
+            storeMenuList= menuDongList.stream().map(Menu::getStore).toList();
             menuListAdd(menuResult, storeMenuList, menuDongList);
             //너무 적으면 가게가 구로 있는 데이터까지 확장
             if(menuDongList.size() < 2) {
@@ -84,18 +91,33 @@ public class SearchService {
                         .filter(menu -> menu.getStore().getAddress().contains(addressGu))
                         .filter(menu -> !menuDongList.contains(menu))
                         .toList();
-                storeMenuList = menuGuList.stream().map(m->m.getStore()).toList();
+                storeMenuList = menuGuList.stream().map(Menu::getStore).toList();
                 menuListAdd(menuResult, storeMenuList, menuGuList);
             }
             return new SearchAllResponseDto(storeResult, menuResult);
         }
         //처음 검색 결과가 15개보다 적으면 모두 결과물로 변환
-        storeMenuList = menuList.stream().map(m->m.getStore()).toList();
+        storeMenuList = menuList.stream().map(Menu::getStore).toList();
         for(int i = 0; i < storeMenuList.size(); i++) {
             menuResult.add(new StoreDetailResponseDto(menuList.get(i), storeMenuList.get(i)));
         }
         //가게와 메뉴 검색 결과를 하나로 만들어 responseDto로 최종 전달
         return new SearchAllResponseDto(storeResult, menuResult);
+    }
+
+    @Transactional
+    public SearchResponsDto createSearch(AuthUser authUser, SearchRequestDto requestDto) {
+        Customer customer = commonService.findCustomerById(authUser.getCustomerId());
+        Search search = new Search(customer, requestDto);
+        Search savedSearch = searchRepository.save(search);
+        return new SearchResponsDto(savedSearch);
+    }
+
+    public SearchLatestResponseDto searchLatest(AuthUser authUser) {
+        Customer customer = commonService.findCustomerById(authUser.getCustomerId());
+        List<Search> searchResult = searchRepository.findAllByCustomerCustomerIdOrderByCreatedAtDesc(authUser.getCustomerId());
+        if (searchResult.isEmpty()) log.info(":::최근 검색 결과 없음");
+        return new SearchLatestResponseDto(customer, searchResult);
     }
 
     private void menuListAdd (List<StoreDetailResponseDto> menuResult, List<Store> storeMenuList, List<Menu> menuList) {

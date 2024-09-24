@@ -11,10 +11,8 @@ import com.sparta.outsourcing.entity.Review;
 import com.sparta.outsourcing.entity.Store;
 import com.sparta.outsourcing.exception.DifferentUsersException;
 import com.sparta.outsourcing.exception.NotFoundException;
-import com.sparta.outsourcing.repository.CustomerRepository;
 import com.sparta.outsourcing.repository.FileRepository;
 import com.sparta.outsourcing.repository.ReviewRepository;
-import com.sparta.outsourcing.repository.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -45,12 +43,6 @@ class ReviewServiceTest {
     ReviewRepository reviewRepository;
 
     @Mock
-    CustomerRepository customerRepository;
-
-    @Mock
-    StoreRepository storeRepository;
-
-    @Mock
     FileService fileService;
 
     @Mock
@@ -58,6 +50,9 @@ class ReviewServiceTest {
 
     @InjectMocks
     ReviewService reviewService;
+
+    @Mock
+    CommonService commonService;
 
     private Customer customer1;
     private Customer customer2;
@@ -93,14 +88,14 @@ class ReviewServiceTest {
                     1L, 3, "ㅠㅠㅠㅠ"
             );
 
-            given(customerRepository.findByCustomerId(customerId)).willReturn(Optional.ofNullable(customer1));
-            given(storeRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(store1));
+            given(commonService.findCustomerById(customerId)).willReturn(customer1);
+            given(commonService.findStoreById(any(Long.class))).willReturn(store1);
             Review review = new Review(customer1, store1, requestDto);
             given(reviewRepository.save(any(Review.class))).willReturn(review);
             given(fileService.uploadFiles(review.getReviewId(), files, ImageEnum.REVIEW)).willReturn(null);
             given(fileRepository.findByItemIdAndImageEnum(review.getReviewId(), ImageEnum.REVIEW)).willReturn(null);
 
-            ReviewService reviewService = new ReviewService(reviewRepository, customerRepository, storeRepository, fileService, fileRepository);
+//            ReviewService reviewService = new ReviewService(reviewRepository, fileService, fileRepository, commonService);
 
             //when
             ReviewResponseDto result = reviewService.createReview(customerId, requestDto, files);
@@ -111,13 +106,14 @@ class ReviewServiceTest {
         }
 
         @Test
-        void 리뷰_생성_storeId가_없을때() {
+        void 리뷰_생성_매장이_없을때() {
             Long customerId = 1L;
             ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto(
-                    null, 3, "ㅠㅠㅠㅠ"
+                    3L, 3, "ㅠㅠㅠㅠ"
             );
-            given(customerRepository.findByCustomerId(customerId)).willReturn(Optional.ofNullable(customer1));
-            ReviewService reviewService = new ReviewService(reviewRepository, customerRepository, storeRepository, fileService, fileRepository);
+            given(commonService.findStoreById(any(Long.class))).willThrow(new NotFoundException("해당하는 매장이 존재하지 않습니다."));
+
+//            ReviewService reviewService = new ReviewService(reviewRepository, customerRepository, storeRepository, fileService, fileRepository);
 
             //when
              NotFoundException exception = assertThrows(NotFoundException.class, ()->reviewService.createReview(customerId, requestDto, files));
@@ -138,7 +134,7 @@ class ReviewServiceTest {
             Long storeId = 1L;
             int minStar = 1;
             int maxStar = 5;
-            given(storeRepository.findById(storeId)).willReturn(Optional.ofNullable(store1));
+            given(commonService.findStoreById(any(Long.class))).willReturn(store1);
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by("updatedAt").descending());
             given(reviewRepository.findAllByStoreAndStarBetween(store1, 1,5,pageable)).willReturn(new PageImpl<>(List.of(review1), pageable, size));
             //when
@@ -156,7 +152,7 @@ class ReviewServiceTest {
             //given
             Long reviewId = 1L;
             ReviewUpdateRequestDto requestDto = new ReviewUpdateRequestDto(5,"success");
-            given(customerRepository.findByCustomerId(anyLong())).willReturn(Optional.ofNullable(customer1));
+            given(commonService.findCustomerById(anyLong())).willReturn(customer1);
             given(reviewRepository.findById(reviewId)).willReturn(Optional.ofNullable(review1));
             given(fileRepository.findByItemIdAndImageEnum(reviewId, ImageEnum.REVIEW)).willReturn(null);
 
@@ -168,11 +164,27 @@ class ReviewServiceTest {
 
         }
 
+
+        @Test
+        void 리뷰_수정_해당_댓글_없음() {
+            //given
+            Long reviewId = 1L;
+            ReviewUpdateRequestDto requestDto = new ReviewUpdateRequestDto(5,"success");
+            given(commonService.findCustomerById(anyLong())).willReturn(customer1);
+            given(reviewRepository.findById(reviewId)).willThrow(new NotFoundException("해당 댓글이 존재하지 않습니다."));
+
+            //when
+            NotFoundException exception = assertThrows(NotFoundException.class, ()->reviewService.updateReview(reviewId, customer1.getCustomerId(), requestDto, files));
+
+            //then
+            assertEquals("해당 댓글이 존재하지 않습니다.", exception.getMessage());
+        }
+
         @Test
         void 리뷰_수정_작성자아님() {
             Long reviewId = 1L;
             ReviewUpdateRequestDto requestDto = new ReviewUpdateRequestDto(5,"success");
-            given(customerRepository.findByCustomerId(anyLong())).willReturn(Optional.ofNullable(customer2));
+            given(commonService.findCustomerById(anyLong())).willReturn(customer2);
             given(reviewRepository.findById(reviewId)).willReturn(Optional.ofNullable(review1));
 
             //when
@@ -190,7 +202,7 @@ class ReviewServiceTest {
         void 리뷰_삭제_성공() {
             //given
             Long reviewId = 1L;
-            given(customerRepository.findByCustomerId(anyLong())).willReturn(Optional.ofNullable(customer1));
+            given(commonService.findCustomerById(anyLong())).willReturn(customer1);
             given(reviewRepository.findById(reviewId)).willReturn(Optional.ofNullable(review1));
             given(fileRepository.findByItemIdAndImageEnum(reviewId, ImageEnum.REVIEW)).willReturn(new ArrayList<>());
             //when-
@@ -201,11 +213,25 @@ class ReviewServiceTest {
     }
 
     @Test
+    void 리뷰_삭제_해당_댓글_없음() {
+        //given
+        Long reviewId = 1L;
+        given(commonService.findCustomerById(anyLong())).willReturn(customer1);
+        given(reviewRepository.findById(reviewId)).willThrow(new NotFoundException("해당 댓글이 존재하지 않습니다."));
+
+        //when
+        NotFoundException exception = assertThrows(NotFoundException.class, ()->reviewService.deleteReview(reviewId, customer1.getCustomerId()));
+
+        //then
+        assertEquals("해당 댓글이 존재하지 않습니다.", exception.getMessage());
+    }
+
+    @Test
     void 리뷰_삭제_작성자_다름 () {
 
         //given
         Long reviewId = 1L;
-        given(customerRepository.findByCustomerId(anyLong())).willReturn(Optional.ofNullable(customer2));
+        given(commonService.findCustomerById(anyLong())).willReturn(customer2);
         given(reviewRepository.findById(reviewId)).willReturn(Optional.ofNullable(review1));
 
         //when

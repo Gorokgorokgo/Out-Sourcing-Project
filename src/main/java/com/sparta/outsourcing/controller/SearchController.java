@@ -1,12 +1,14 @@
 package com.sparta.outsourcing.controller;
 
-import com.sparta.outsourcing.dto.SearchResponseDto;
+import com.sparta.outsourcing.annotation.Auth;
+import com.sparta.outsourcing.dto.customer.AuthUser;
+import com.sparta.outsourcing.dto.search.SearchAllResponseDto;
+import com.sparta.outsourcing.dto.search.SearchLatestResponseDto;
+import com.sparta.outsourcing.dto.search.SearchRequestDto;
+import com.sparta.outsourcing.dto.search.SearchResponsDto;
 import com.sparta.outsourcing.service.SearchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/search")
@@ -21,7 +23,7 @@ public class SearchController {
      * @return 검색결과 Dto
      */
     @GetMapping("/all/user")
-    public SearchResponseDto searchAllUser (@RequestParam String keyword, @RequestParam String address) {
+    public SearchAllResponseDto searchAllUser (@RequestParam String keyword, @RequestParam String address) {
         return searchService.searchAll(keyword, address);
     }
     /**
@@ -31,9 +33,20 @@ public class SearchController {
      * @return 검색결과 Dto
      */
     @GetMapping("/all/address")
-    public SearchResponseDto searchAllAddress (@RequestParam String keyword, @RequestParam String address) {
+    public SearchAllResponseDto searchAllAddress (@RequestParam String keyword, @RequestParam String address) {
         return searchService.searchAll(keyword, address);
     }
 
+
+    @PostMapping("")
+    public SearchResponsDto createSearch (@Auth AuthUser authUser, @RequestBody SearchRequestDto requestDto) {
+        return searchService.createSearch(authUser, requestDto);
+
+    }
+
+    @GetMapping("/latest")
+    public SearchLatestResponseDto searchLatest (@Auth AuthUser authUser) {
+        return searchService.searchLatest(authUser);
+    }
 
 }
