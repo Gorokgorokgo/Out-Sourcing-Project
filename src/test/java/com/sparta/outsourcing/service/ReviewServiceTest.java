@@ -60,8 +60,6 @@ class ReviewServiceTest {
     List<MultipartFile> files = new ArrayList<>();
     private Review review1;
 
-    private Store store2;
-
 
     @BeforeEach
     void setUp() {
@@ -92,10 +90,7 @@ class ReviewServiceTest {
             given(commonService.findStoreById(any(Long.class))).willReturn(store1);
             Review review = new Review(customer1, store1, requestDto);
             given(reviewRepository.save(any(Review.class))).willReturn(review);
-            given(fileService.uploadFiles(review.getReviewId(), files, ImageEnum.REVIEW)).willReturn(null);
             given(fileRepository.findByItemIdAndImageEnum(review.getReviewId(), ImageEnum.REVIEW)).willReturn(null);
-
-//            ReviewService reviewService = new ReviewService(reviewRepository, fileService, fileRepository, commonService);
 
             //when
             ReviewResponseDto result = reviewService.createReview(customerId, requestDto, files);
