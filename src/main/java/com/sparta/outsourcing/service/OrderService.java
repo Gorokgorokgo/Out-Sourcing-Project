@@ -62,8 +62,9 @@ public class OrderService {
 
 
   // 주문내역 조회
-  public OrderResponseDto getOrder(Long orderId) {
-    Order order = findById(orderId);
+  public OrderResponseDto getOrder(AuthUser authUser, Long orderId) {
+
+    Order order = findByCustomer_CustomerIdAndOrderId(authUser, orderId);
 
     List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
         .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
@@ -81,9 +82,9 @@ public class OrderService {
 
   @Transactional
   // 주문내역 수정
-  public OrderResponseDto modifyOrder(Long orderId, OrderRequestDto orderRequestDto) {
+  public OrderResponseDto modifyOrder(AuthUser authUser, Long orderId, OrderRequestDto orderRequestDto) {
 
-    Order order = findById(orderId);
+    Order order = findByCustomer_CustomerIdAndOrderId(authUser, orderId);
 
     Order updatedOrder = new Order(
         order.getCustomer(),
@@ -108,8 +109,9 @@ public class OrderService {
         orderMenus);
   }
 
-  public void deleteOrder(Long orderId) {
-    Order order = findById(orderId);
+  public void deleteOrder(AuthUser authUser, Long orderId) {
+
+    Order order = findByCustomer_CustomerIdAndOrderId(authUser, orderId);
 
     orderRepository.delete(order);
   }
@@ -139,8 +141,8 @@ public class OrderService {
     return totalPrice;
   }
 
-  private Order findById(Long orderId) {
-    return orderRepository.findById(orderId).orElseThrow(
+  private Order findByCustomer_CustomerIdAndOrderId(AuthUser authUser, Long orderId) {
+    return orderRepository.findByCustomer_CustomerIdAndOrderId(authUser.getCustomerId(), orderId).orElseThrow(
         () -> new OrderNotFoundException("주문내역을 찾을 수 없습니다."));
   }
 }
