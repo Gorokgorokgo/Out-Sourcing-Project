@@ -73,9 +73,7 @@ public class SearchService {
         if(menuList.size() > 4) {
             List<Menu> menuDongList = menuList.stream().filter(menu -> menu.getStore().getAddress().contains(addressDong)).toList();
             storeMenuList= menuDongList.stream().map(menu -> menu.getStore()).toList();
-            for(int i = 0; i < storeMenuList.size(); i++) {
-                menuResult.add(new StoreDetailResponseDto(menuDongList.get(i), storeMenuList.get(i)));
-            }
+            menuListAdd(menuResult, storeMenuList, menuDongList);
             //너무 적으면 가게가 구로 있는 데이터까지 확장
             if(menuDongList.size() < 2) {
                 List<Menu> menuGuList = menuList.stream()
@@ -83,17 +81,22 @@ public class SearchService {
                         .filter(menu -> !menuDongList.contains(menu))
                         .toList();
                 storeMenuList = menuGuList.stream().map(m->m.getStore()).toList();
-                for(int i = 0; i < storeMenuList.size(); i++) {
-                    menuResult.add(new StoreDetailResponseDto(menuGuList.get(i), storeMenuList.get(i)));
-                }
+                menuListAdd(menuResult, storeMenuList, menuGuList);
             }
             return new SearchResponseDto(storeResult, menuResult);
         }
-
+        //처음 검색 결과가 15개보다 적으면 모두 결과물로 변환
         storeMenuList = menuList.stream().map(m->m.getStore()).toList();
         for(int i = 0; i < storeMenuList.size(); i++) {
             menuResult.add(new StoreDetailResponseDto(menuList.get(i), storeMenuList.get(i)));
         }
+        //가게와 메뉴 검색 결과를 하나로 만들어 responseDto로 최종 전달
         return new SearchResponseDto(storeResult, menuResult);
+    }
+
+    private void menuListAdd (List<StoreDetailResponseDto> menuResult, List<Store> storeMenuList, List<Menu> menuList) {
+        for(int i = 0; i < storeMenuList.size(); i++) {
+            menuResult.add(new StoreDetailResponseDto(menuList.get(i), storeMenuList.get(i)));
+        }
     }
 }
