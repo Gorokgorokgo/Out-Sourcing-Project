@@ -23,5 +23,10 @@ public class CartController {
   public CartResponseDto addCart(@Auth AuthUser authUser, @Valid @RequestBody CartRequestDto cartRequestDto) {
     return cartService.addCart(authUser, cartRequestDto);
   }
+
+  @DeleteMapping("/delete/{cartId}")
+  public CartResponseDto deleteCart(@Auth AuthUser authUser, @PathVariable Long menuId) {
+    return cartService.deleteCart(authUser, menuId);
+  }
 }
 

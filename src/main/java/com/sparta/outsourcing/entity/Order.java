@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.entity;
 
+import com.sparta.outsourcing.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Table(name = "orders")
 @Entity
@@ -44,9 +47,24 @@ public class Order {
   private LocalDateTime orderDate;
 
   @Enumerated(EnumType.STRING)
-  private OrderStatus orderStatus;
+  private OrderStatus orderStatus = OrderStatus.READY;
 
-  private enum OrderStatus {
-    READY, ON_DELIVERY, DELIVERED;
+  // Order와 Menu의 중간 테이블 관계 추가
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<OrderMenu> orderMenus;  // 중간 테이블 엔티티
+
+  public Order(Customer customer, Store store, String deliveryAddress, String request) {
+    this.customer = customer;
+    this.store = store;
+    this.deliveryAddress = deliveryAddress;
+    this.request = request;
+  }
+
+  public Order(Customer customer, Store store, String deliveryAddress, String request, Long totalPrice) {
+    this.customer = customer;
+    this.store = store;
+    this.deliveryAddress = deliveryAddress;
+    this.request = request;
+    this.totalPrice = totalPrice;
   }
 }

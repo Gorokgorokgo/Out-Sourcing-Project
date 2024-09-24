@@ -36,6 +36,8 @@ public class Cart {
   @Column(name = "total_price")
   private Long totalPrice;
 
+
+
   public Cart(Customer customer, Store store, Long totalQuantity, Long totalPrice) {
     this.customer = customer;
     this.store = store;
@@ -44,6 +46,8 @@ public class Cart {
   }
 
   public void addMenuCart(Menu menu, Long quantity) {
+    if (totalQuantity == null) totalQuantity = 0L;
+    if (totalPrice == null) totalPrice = 0L;
     MenuCart menuCart = new MenuCart(menu, this, quantity);
     menuCarts.add(menuCart);
     this.store = menu.getStore();
