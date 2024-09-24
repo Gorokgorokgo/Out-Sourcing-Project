@@ -47,14 +47,15 @@ public class MenuService {
         checkAdminAuthority(authUser);  // ADMIN 권한 확인
         checkStoreOwnership(authUser, findStore);  // 본인 가게인지 확인
 
-        if (files != null && !files.isEmpty()) {
-            if (files.size() > 1)
-                throw new ImageUploadLimitExceededException("파일은 1개만 업로드 가능합니다.");
-            fileService.uploadFiles(findStore.getStoreId(), files, ImageEnum.MENU);
-        }
-        List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.MENU);
         Menu menu = new Menu(findCustomer, findStore, requestDto);
         MenuResponseDto menuResponseDto = new MenuResponseDto(menuRepository.save(menu));
+        if (files != null && !files.isEmpty()) {
+            if (files.size() > 1) {
+                throw new ImageUploadLimitExceededException("파일은 1개만 업로드 가능합니다.");
+            }
+            fileService.uploadFiles(menuResponseDto.getMenuId(), files, ImageEnum.MENU);
+        }
+        List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(menuResponseDto.getMenuId(), ImageEnum.MENU);
         menuResponseDto.setImage(byItemIdAndImageEnum);
 
         return menuResponseDto;

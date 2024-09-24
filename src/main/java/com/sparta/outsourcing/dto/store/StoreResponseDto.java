@@ -45,6 +45,11 @@ public class StoreResponseDto {
         this.menus = menus.stream().map(menu -> new MenuResponseDto(menu)).toList();
     }
 
+    public void setMenus2(List<MenuResponseDto> menus) {
+        this.menus = menus;
+    }
+
+
 
     public void setImage(List<Image> byItemIdAndImageEnum) {
         this.image = byItemIdAndImageEnum.stream().map(file -> new FileResponseDto(file)).toList();

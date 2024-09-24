@@ -20,6 +20,9 @@ public class MenuResponseDto {
 
     private List<FileResponseDto> fileResponseDto;
 
+    public MenuResponseDto() {
+    }
+
     public MenuResponseDto(Menu menu) {
         this.customerId = menu.getCustomer().getCustomerId();
         this.storeId = menu.getStore().getStoreId();

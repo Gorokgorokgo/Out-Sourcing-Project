@@ -3,21 +3,20 @@ package com.sparta.outsourcing.service;
 import com.sparta.outsourcing.constant.MenuStatus;
 import com.sparta.outsourcing.constant.UserRoleEnum;
 import com.sparta.outsourcing.dto.customer.AuthUser;
+import com.sparta.outsourcing.dto.menu.MenuResponseDto;
+import com.sparta.outsourcing.entity.*;
 import com.sparta.outsourcing.repository.FileRepository;
 import com.sparta.outsourcing.dto.store.StoreRequestDto;
 import com.sparta.outsourcing.dto.store.StoreResponseDto;
 import com.sparta.outsourcing.dto.store.StoreStatusUpdateDto;
 import com.sparta.outsourcing.dto.store.StoreUpdateRequestDto;
-import com.sparta.outsourcing.entity.Customer;
-import com.sparta.outsourcing.entity.Image;
-import com.sparta.outsourcing.entity.ImageEnum;
-import com.sparta.outsourcing.entity.Store;
 import com.sparta.outsourcing.exception.common.UnauthorizedAccessException;
 import com.sparta.outsourcing.exception.customer.CustomerNotFoundException;
 import com.sparta.outsourcing.exception.file.ImageUploadLimitExceededException;
 import com.sparta.outsourcing.exception.store.MaxStoreLimitReachedException;
 import com.sparta.outsourcing.exception.store.StoreNotFoundException;
 import com.sparta.outsourcing.repository.CustomerRepository;
+import com.sparta.outsourcing.repository.MenuRepository;
 import com.sparta.outsourcing.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,6 +40,8 @@ public class StoreService {
     private final CustomerRepository customerRepository;
     private final FileService fileService;
     private final FileRepository fileRepository;
+
+    private final MenuRepository menuRepository;
 
     // 가게 생성
     @Transactional
@@ -70,12 +71,24 @@ public class StoreService {
         List<MenuStatus> statuses = Arrays.asList(MenuStatus.ACTIVE, MenuStatus.OUT_OF_STOCK);
         Store findStore = getStore(storeId, statuses);  // 상태 만족하는 가게 & 메뉴 조회
 
-        List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.STORE);
+        // 가게 이미지 조회
+        List<Image> storeImages = fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.STORE);
         StoreResponseDto storeResponseDto = new StoreResponseDto(findStore);
-        storeResponseDto.setImage(byItemIdAndImageEnum);
-        storeResponseDto.setMenus(findStore.getMenus().stream()
+        storeResponseDto.setImage(storeImages);
+
+        // 메뉴 이미지와 함께 처리
+        List<MenuResponseDto> menus = findStore.getMenus().stream()
                 .filter(menu -> statuses.contains(menu.getMenuStatus()))
-                .collect(Collectors.toList()));
+                .map(menu -> {
+                    // 각 메뉴에 대해 이미지 조회
+                    List<Image> menuImages = fileRepository.findByItemIdAndImageEnum(menu.getMenuId(), ImageEnum.MENU);
+                    MenuResponseDto menuResponseDto = new MenuResponseDto(menu);
+                    menuResponseDto.setImage(menuImages); // 메뉴 이미지 설정
+                    return menuResponseDto;
+                })
+                .collect(Collectors.toList());
+
+        storeResponseDto.setMenus2(menus);
 
         return storeResponseDto;
     }
@@ -85,9 +98,21 @@ public class StoreService {
     public Page<StoreResponseDto> getStores(Pageable pageable) {
         Page<Store> stores = storeRepository.findAllByStoreStatus(true, pageable);  // 개업 상태 가게 목록 조회
         return stores.map(store -> {
-            List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(store.getStoreId(), ImageEnum.STORE);
+            // Store 이미지 처리
+            List<Image> storeImages = fileRepository.findByItemIdAndImageEnum(store.getStoreId(), ImageEnum.STORE);
             StoreResponseDto storeResponseDto = new StoreResponseDto(store);
-            storeResponseDto.setImage(byItemIdAndImageEnum);
+            storeResponseDto.setImage(storeImages);
+
+            // 메뉴 처리
+            List<MenuResponseDto> menus = store.getMenus().stream().map(menu -> {
+                // 메뉴 이미지 처리
+                List<Image> menuImages = fileRepository.findByItemIdAndImageEnum(menu.getMenuId(), ImageEnum.MENU);
+                MenuResponseDto menuResponseDto = new MenuResponseDto(menu);
+                menuResponseDto.setImage(menuImages);  // 메뉴 이미지 설정
+                return menuResponseDto;
+            }).collect(Collectors.toList());
+
+            storeResponseDto.setMenus2(menus);
             return storeResponseDto;
         });
     }
