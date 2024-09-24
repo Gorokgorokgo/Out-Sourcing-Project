@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,12 +34,7 @@ public class OrderService {
         () -> new IllegalArgumentException("가게를 찾을 수 없습니다."));
 
     // 주문 금액 계산
-    Long totalPrice = 0L;
-    for (OrderMenuDto orderMenuDto : orderRequestDto.getOrderList()) {
-      Menu menu = findMenuById(orderMenuDto.getMenuId());
-      totalPrice += menu.getMenuPrice() * orderMenuDto.getQuantity();
-    }
-
+    Long totalPrice = calculateTotalPrice(orderRequestDto.getOrderList());
     // 주문 생성
     Order order = new Order(customer, store, orderRequestDto.getDeliveryAddress(), orderRequestDto.getRequest(), totalPrice);
     orderRepository.save(order);
@@ -65,13 +59,14 @@ public class OrderService {
         orderRequestDto.getOrderList());
   }
 
+
   // 주문내역 조회
   public OrderResponseDto getOrder(Long orderId) {
     Order order = orderRepository.findById(orderId).orElseThrow(
         () -> new IllegalArgumentException("주문내역을 찾을 수 없습니다."));
     List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
         .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
-        .collect(Collectors.toList());
+        .toList();
 
     return new OrderResponseDto("주문내역 입니다.",
         order.getStore().getStoreName(),
@@ -79,6 +74,37 @@ public class OrderService {
         order.getOrderStatus().name(),
         order.getTotalPrice(),
         order.getDeliveryAddress(),
+        orderMenus);
+  }
+
+
+  @Transactional
+  // 주문내역 수정
+  public OrderResponseDto modifyOrder(Long orderId, OrderRequestDto orderRequestDto) {
+
+    Order order = orderRepository.findById(orderId).orElseThrow(
+        () -> new IllegalArgumentException("주문내역을 찾을 수 없습니다."));
+
+    Order updatedOrder = new Order(
+        order.getCustomer(),
+        order.getStore(),
+        orderRequestDto.getDeliveryAddress(),
+        orderRequestDto.getRequest(),
+        calculateTotalPrice(orderRequestDto.getOrderList())
+    );
+
+    List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
+        .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
+        .toList();
+
+    orderRepository.save(updatedOrder);
+
+    return new OrderResponseDto("주문이 수정되었습니다.",
+        order.getStore().getStoreName(),
+        updatedOrder.getOrderId(),
+        updatedOrder.getOrderStatus().name(),
+        updatedOrder.getTotalPrice(),
+        updatedOrder.getDeliveryAddress(),
         orderMenus);
   }
 
@@ -95,6 +121,15 @@ public class OrderService {
     return menuRepository.findById(menuId)
         .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다."));
   }
-}
 
+  // 주문 금액 계산
+  private Long calculateTotalPrice(List<OrderMenuDto> orderList) {
+    Long totalPrice = 0L;
+    for (OrderMenuDto orderMenuDto : orderList) {
+      Menu menu = findMenuById(orderMenuDto.getMenuId());
+      totalPrice += menu.getMenuPrice() * orderMenuDto.getQuantity();
+    }
+    return totalPrice;
+  }
+}
 
