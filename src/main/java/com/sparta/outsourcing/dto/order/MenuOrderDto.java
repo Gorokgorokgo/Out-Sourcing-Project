@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderMenuDto {
+public class MenuOrderDto {
 
   @NotNull(message = "메뉴 ID는 필수입니다.")
   private Long menuId; // 메뉴 ID
