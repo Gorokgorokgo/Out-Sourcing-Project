@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -36,6 +37,18 @@ public class OrderService {
 
     // 주문 금액 계산
     Long totalPrice = calculateTotalPrice(orderRequestDto.getOrderList());
+
+    // 최소주문 금액
+    if(store.getMinPrice() > totalPrice) {
+      return new OrderResponseDto("최소 주문금액을 충족하지 못 했습니다.");
+    }
+
+    // 오픈,마감시간
+    LocalTime now = LocalTime.now();
+    if (now.isBefore(store.getOpenTime()) || now.isAfter(store.getCloseTime())) {
+      return new OrderResponseDto("가게의 오픈/마감 시간이 지났습니다.");
+    }
+
     // 주문 생성
     Order order = new Order(customer, store, orderRequestDto.getDeliveryAddress(), orderRequestDto.getRequest(), totalPrice);
     orderRepository.save(order);
@@ -62,8 +75,9 @@ public class OrderService {
 
 
   // 주문내역 조회
-  public OrderResponseDto getOrder(Long orderId) {
-    Order order = findById(orderId);
+  public OrderResponseDto getOrder(AuthUser authUser, Long orderId) {
+
+    Order order = findByCustomer_CustomerIdAndOrderId(authUser, orderId);
 
     List<OrderMenuDto> orderMenus = order.getOrderMenus().stream()
         .map(orderMenu -> new OrderMenuDto(orderMenu.getMenu().getMenuId(), orderMenu.getQuantity()))
@@ -81,9 +95,9 @@ public class OrderService {
 
   @Transactional
   // 주문내역 수정
-  public OrderResponseDto modifyOrder(Long orderId, OrderRequestDto orderRequestDto) {
+  public OrderResponseDto modifyOrder(AuthUser authUser, Long orderId, OrderRequestDto orderRequestDto) {
 
-    Order order = findById(orderId);
+    Order order = findByCustomer_CustomerIdAndOrderId(authUser, orderId);
 
     Order updatedOrder = new Order(
         order.getCustomer(),
@@ -108,8 +122,9 @@ public class OrderService {
         orderMenus);
   }
 
-  public void deleteOrder(Long orderId) {
-    Order order = findById(orderId);
+  public void deleteOrder(AuthUser authUser, Long orderId) {
+
+    Order order = findByCustomer_CustomerIdAndOrderId(authUser, orderId);
 
     orderRepository.delete(order);
   }
@@ -139,8 +154,8 @@ public class OrderService {
     return totalPrice;
   }
 
-  private Order findById(Long orderId) {
-    return orderRepository.findById(orderId).orElseThrow(
+  private Order findByCustomer_CustomerIdAndOrderId(AuthUser authUser, Long orderId) {
+    return orderRepository.findByCustomer_CustomerIdAndOrderId(authUser.getCustomerId(), orderId).orElseThrow(
         () -> new OrderNotFoundException("주문내역을 찾을 수 없습니다."));
   }
 }
