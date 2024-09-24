@@ -6,7 +6,7 @@ import com.sparta.outsourcing.dto.review.ReviewCreateRequestDto;
 import com.sparta.outsourcing.dto.review.ReviewResponseDto;
 import com.sparta.outsourcing.dto.review.ReviewSimpleResponseDto;
 import com.sparta.outsourcing.dto.review.ReviewUpdateRequestDto;
-import com.sparta.outsourcing.exception.DifferentUsersException;
+import com.sparta.outsourcing.exception.customer.DifferentUsersException;
 import com.sparta.outsourcing.service.ReviewService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -50,7 +50,6 @@ public class ReviewController {
                                                            @Auth AuthUser authUser,
                                                            @RequestPart(required = false) ReviewUpdateRequestDto requestDto,
                                                            @RequestPart(value = "file", required = false) List<MultipartFile> files) throws IOException, DifferentUsersException {
-
         return ResponseEntity.ok(reviewService.updateReview(reviewId, authUser.getCustomerId(), requestDto, files));
     }
 

@@ -1,9 +1,11 @@
 package com.sparta.outsourcing.dto.review;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class ReviewUpdateRequestDto {
     @NotNull(message = "별점은 필수값입니다.")
     @Min(1)
