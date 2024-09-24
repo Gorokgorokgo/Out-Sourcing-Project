@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -36,6 +37,18 @@ public class OrderService {
 
     // 주문 금액 계산
     Long totalPrice = calculateTotalPrice(orderRequestDto.getOrderList());
+
+    // 최소주문 금액
+    if(store.getMinPrice() > totalPrice) {
+      return new OrderResponseDto("최소 주문금액을 충족하지 못 했습니다.");
+    }
+
+    // 오픈,마감시간
+    LocalTime now = LocalTime.now();
+    if (now.isBefore(store.getOpenTime()) || now.isAfter(store.getCloseTime())) {
+      return new OrderResponseDto("가게의 오픈/마감 시간이 지났습니다.");
+    }
+
     // 주문 생성
     Order order = new Order(customer, store, orderRequestDto.getDeliveryAddress(), orderRequestDto.getRequest(), totalPrice);
     orderRepository.save(order);
