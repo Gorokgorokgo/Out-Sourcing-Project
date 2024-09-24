@@ -45,8 +45,8 @@ public class ReviewService {
         Store store = findStoreById(requestDto.getStoreId());
         Review review = new Review(customer, store, requestDto);
         Review saveReview = reviewRepository.save(review);
-        fileService.uploadFiles(saveReview.getId(), files, ImageEnum.REVIEW);
-        List<Image> image = findByItemIdAndImageEnum(saveReview.getId());
+        fileService.uploadFiles(saveReview.getReviewId(), files, ImageEnum.REVIEW);
+        List<Image> image = findByItemIdAndImageEnum(saveReview.getReviewId());
         return new ReviewResponseDto(saveReview, image);
     }
 
@@ -56,7 +56,7 @@ public class ReviewService {
         Page<Review> reviewList = reviewRepository.findAllByStoreAndStarBetween(store, minStar, maxStar, pageable);
         return reviewList.map(review -> {
             // 각 리뷰에 대한 이미지를 조회
-            List<Image> images = findByItemIdAndImageEnum(review.getId());
+            List<Image> images = findByItemIdAndImageEnum(review.getReviewId());
             return new ReviewSimpleResponseDto(review, images);
         });
     }
@@ -77,8 +77,8 @@ public class ReviewService {
                 throw new ImageUploadLimitExceededException("이미지는 최대 3개까지 업로드 가능합니다.");
             }
             fileService.uploadFiles(reviewId, files, ImageEnum.REVIEW);
-            review.update(requestDto);
         }
+        review.update(requestDto);
         return new ReviewResponseDto(review, savedImage);
     }
 
@@ -87,13 +87,12 @@ public class ReviewService {
         findCustomerById(customerId);
         Review review = findReviewById(reviewId);
         if (!customerId.equals(review.getCustomer().getCustomerId()))
-            throw new IllegalArgumentException("작성자가 아니므로 삭제가 불가능합니다.");
+            throw new DifferentUsersException("작성자가 아니므로 삭제가 불가능합니다.");
         reviewRepository.deleteById(reviewId);
         List<Image> byItemIdAndImageEnum = findByItemIdAndImageEnum(reviewId);
         for (Image image : byItemIdAndImageEnum) {
             fileRepository.delete(image);
         }
-        reviewRepository.deleteById(reviewId);
     }
 
 
