@@ -42,7 +42,7 @@ public class CustomerService {
             if (!ADMIN_TOKEN.equals(customerRequestDto.getAdminToken())) {
                 throw new InvalidAdminTokenException("관리자 암호가 틀려 등록이 불가능합니다.");
             }
-            role = UserRoleEnum.ADMIN;
+            role = UserRoleEnum.OWNER;
         }
 
         Customer customer = Customer.create(

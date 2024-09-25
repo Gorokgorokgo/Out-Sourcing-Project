@@ -18,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -41,10 +42,10 @@ class StoreServiceTest {
 
     @Test
     @DisplayName("가게 생성 성공 테스트")
-    public void createStoreSuccess() {
+    public void createStoreSuccess() throws IOException {
         // Given
         StoreRequestDto requestDto = new StoreRequestDto("Test Store", 10000, true, "Seoul", LocalTime.of(9, 0), LocalTime.of(22, 0));
-        AuthUser authUser = new AuthUser(1L, "admin@test.com", UserRoleEnum.ADMIN);
+        AuthUser authUser = new AuthUser(1L, "admin@test.com", UserRoleEnum.OWNER);
 
         Customer customer1 = new Customer();  // Mock된 Customer 엔티티
         ReflectionTestUtils.setField(customer1, "customerId", 1L);
@@ -59,7 +60,7 @@ class StoreServiceTest {
         when(storeRepository.save(any(Store.class))).thenReturn(store);
 
         // 실제로 service에서 메서드를 호출
-        StoreResponseDto createdStore = storeService.createStore(authUser, requestDto);
+        StoreResponseDto createdStore = storeService.createStore(authUser, requestDto, null);
 
         // then: 결과 확인
         assertNotNull(createdStore);  // 가게가 성공적으로 생성되었는지 확인

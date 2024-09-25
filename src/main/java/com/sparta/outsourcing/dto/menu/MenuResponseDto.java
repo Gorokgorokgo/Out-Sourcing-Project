@@ -1,9 +1,12 @@
 package com.sparta.outsourcing.dto.menu;
 
 import com.sparta.outsourcing.constant.MenuStatus;
+import com.sparta.outsourcing.dto.file.FileResponseDto;
+import com.sparta.outsourcing.entity.Image;
 import com.sparta.outsourcing.entity.Menu;
-import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 //@Builder
@@ -15,6 +18,11 @@ public class MenuResponseDto {
     private int menuPrice;
     private MenuStatus menuStatus;
 
+    private List<FileResponseDto> fileResponseDto;
+
+    public MenuResponseDto() {
+    }
+
     public MenuResponseDto(Menu menu) {
         this.customerId = menu.getCustomer().getCustomerId();
         this.storeId = menu.getStore().getStoreId();
@@ -22,6 +30,10 @@ public class MenuResponseDto {
         this.menuName = menu.getMenuName();
         this.menuPrice = menu.getMenuPrice();
         this.menuStatus = menu.getMenuStatus();
+    }
+
+    public void setImage(List<Image> byItemIdAndImageEnum) {
+        this.fileResponseDto = byItemIdAndImageEnum.stream().map(file -> new FileResponseDto(file)).toList();
     }
 
 //    public static MenuResponseDto ofDto(Menu menu) {

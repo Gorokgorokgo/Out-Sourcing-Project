@@ -7,19 +7,23 @@ import com.sparta.outsourcing.dto.menu.MenuRequestDto;
 import com.sparta.outsourcing.dto.menu.MenuResponseDto;
 import com.sparta.outsourcing.dto.menu.MenuStatusUpdateDto;
 import com.sparta.outsourcing.dto.menu.MenuUpdateDto;
-import com.sparta.outsourcing.entity.Customer;
-import com.sparta.outsourcing.entity.Menu;
-import com.sparta.outsourcing.entity.Store;
+import com.sparta.outsourcing.entity.*;
+import com.sparta.outsourcing.exception.file.ImageUploadLimitExceededException;
 import com.sparta.outsourcing.exception.menu.MenuNotFoundException;
 import com.sparta.outsourcing.exception.customer.CustomerNotFoundException;
 import com.sparta.outsourcing.exception.store.StoreNotFoundException;
 import com.sparta.outsourcing.exception.common.UnauthorizedAccessException;
 import com.sparta.outsourcing.repository.CustomerRepository;
+import com.sparta.outsourcing.repository.FileRepository;
 import com.sparta.outsourcing.repository.MenuRepository;
 import com.sparta.outsourcing.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 
 @Service
@@ -31,9 +35,12 @@ public class MenuService {
     private final StoreRepository storeRepository;
     private final CustomerRepository customerRepository;
 
+    private final FileService fileService;
+    private final FileRepository fileRepository;
+
     // 메뉴 생성
     @Transactional
-    public MenuResponseDto createMenu(AuthUser authUser, Long storeId, MenuRequestDto requestDto) {
+    public MenuResponseDto createMenu(AuthUser authUser, Long storeId, MenuRequestDto requestDto, List<MultipartFile> files) throws IOException {
         Customer findCustomer = getFindCustomer(authUser);  // 사용자 확인
         Store findStore = getFindStore(storeId);    // 가게 있는지 확인
 
@@ -41,12 +48,22 @@ public class MenuService {
         checkStoreOwnership(authUser, findStore);  // 본인 가게인지 확인
 
         Menu menu = new Menu(findCustomer, findStore, requestDto);
-        return new MenuResponseDto(menuRepository.save(menu));
+        MenuResponseDto menuResponseDto = new MenuResponseDto(menuRepository.save(menu));
+        if (files != null && !files.isEmpty()) {
+            if (files.size() > 1) {
+                throw new ImageUploadLimitExceededException("파일은 1개만 업로드 가능합니다.");
+            }
+            fileService.uploadFiles(menuResponseDto.getMenuId(), files, ImageEnum.MENU);
+        }
+        List<Image> byItemIdAndImageEnum = fileRepository.findByItemIdAndImageEnum(menuResponseDto.getMenuId(), ImageEnum.MENU);
+        menuResponseDto.setImage(byItemIdAndImageEnum);
+
+        return menuResponseDto;
     }
 
     // 메뉴 수정
     @Transactional
-    public MenuResponseDto updateMenu(AuthUser authUser, Long storeId, Long menuId, MenuUpdateDto requestDto) {
+    public MenuResponseDto updateMenu(AuthUser authUser, Long storeId, Long menuId, MenuUpdateDto requestDto, List<MultipartFile> files) throws IOException {
         Customer findCustomer = getFindCustomer(authUser);  // 사용자 확인
         Store findStore = getFindStore(storeId);    // 수정 할 가게 있는지 확인
         Menu findMenu = getFindMenu(menuId);    // 수정 할 메뉴 확인
@@ -54,8 +71,17 @@ public class MenuService {
         checkAdminAuthority(authUser);  // ADMIN 권한 확인
         checkStoreOwnership(authUser, findStore);  // 본인 가게인지 확인
 
+        if (files != null && !files.isEmpty()) {
+            if (files.size() > 1)
+                throw new ImageUploadLimitExceededException("파일은 1개만 업로드 가능합니다.");
+            fileRepository.findByItemIdAndImageEnum(findStore.getStoreId(), ImageEnum.MENU).forEach(fileRepository::delete);
+            fileService.uploadFiles(findStore.getStoreId(), files, ImageEnum.MENU);
+        }
+
         findMenu.update(findCustomer, findStore, requestDto);
-        return new MenuResponseDto(findMenu);
+        MenuResponseDto menuResponseDto = new MenuResponseDto(findMenu);
+        menuResponseDto.setImage(fileRepository.findByItemIdAndImageEnum(findMenu.getMenuId(), ImageEnum.MENU));
+        return menuResponseDto;
     }
 
     // 메뉴 상태 변경
@@ -104,7 +130,7 @@ public class MenuService {
     }
 
     private void checkAdminAuthority(AuthUser authUser) {
-        if(!authUser.getRole().getAuthority().equals(UserRoleEnum.ADMIN.getAuthority())) {
+        if(!authUser.getRole().getAuthority().equals(UserRoleEnum.OWNER.getAuthority())) {
             throw new UnauthorizedAccessException("사장님만 가능합니다.");
         }
     }
