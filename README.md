@@ -34,3 +34,13 @@ Spring Boot, JPA, IntelliJ IDEA 등을 활용하여 배달 서비스 서버를 �
 + **IntelliJ IDEA**: 개발 환경
 
 ---
+
+### 💾 API 명세서
+
+[API 명세서 Notion 링크](https://www.notion.so/teamsparta/61564605b5554f008581b3094188cd37?v=156bc066e31c4c7f8c0b4c2ef6ab4d62&pvs=4)
+
+---
+
+### ERD
+
+[이미지](https://ibb.co/3FJ87F2)
