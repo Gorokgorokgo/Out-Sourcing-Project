@@ -43,4 +43,4 @@ Spring Boot, JPA, IntelliJ IDEA 등을 활용하여 배달 서비스 서버를 �
 
 ### ERD
 
-[이미지](https://ibb.co/3FJ87F2)
+![이미지](https://ibb.co/3FJ87F2)
