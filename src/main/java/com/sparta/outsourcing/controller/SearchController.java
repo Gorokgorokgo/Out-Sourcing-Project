@@ -24,7 +24,7 @@ public class SearchController {
      * @param address : 사용자 지정한 주소
      * @return 검색결과 Dto
      */
-    @GetMapping("/all/address")
+    @GetMapping("/all")
     public ResponseEntity<SearchAllResponseDto> searchAllAddress (@RequestParam String keyword, @RequestParam String address) {
         return ResponseEntity.ok(searchService.searchAll(keyword, address));
     }

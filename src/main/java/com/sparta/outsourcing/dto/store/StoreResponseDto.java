@@ -6,12 +6,16 @@ import com.sparta.outsourcing.dto.menu.MenuResponseDto;
 import com.sparta.outsourcing.entity.Image;
 import com.sparta.outsourcing.entity.Menu;
 import com.sparta.outsourcing.entity.Store;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.List;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class StoreResponseDto {
     private Long storeId;
     private String storeName;
@@ -27,8 +31,6 @@ public class StoreResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime closeTime;
 
-    public StoreResponseDto() {
-    }
 
     public StoreResponseDto(Store store) {
         this.storeId = store.getStoreId();
